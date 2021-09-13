@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using MarketingBox.RegistrationApi.Models.Partners;
-using MarketingBox.RegistrationApi.Models.Partners.Requests;
+using MarketingBox.RegistrationApi.Models.Lead;
+using MarketingBox.RegistrationApi.Models.Lead.Requests;
 using MarketingBox.RegistrationApi.Pagination;
 
 namespace MarketingBox.RegistrationApi.Controllers
@@ -21,9 +21,9 @@ namespace MarketingBox.RegistrationApi.Controllers
         /// <remarks>
         /// </remarks>
         [HttpGet]
-        [ProducesResponseType(typeof(Paginated<PartnerModel, long>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Paginated<LeadModel, long>), StatusCodes.Status200OK)]
 
-        public async Task<ActionResult<Paginated<PartnerModel, long>>> SearchAsync(
+        public async Task<ActionResult<Paginated<LeadModel, long>>> SearchAsync(
             [FromQuery] PartnersSearchRequest request)
         {
             if (request.Limit < 1 || request.Limit > 1000)
@@ -46,10 +46,10 @@ namespace MarketingBox.RegistrationApi.Controllers
         /// <remarks>
         /// </remarks>
         [HttpPost]
-        [ProducesResponseType(typeof(PartnerModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<PartnerModel>> CreateAsync(
+        [ProducesResponseType(typeof(LeadModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LeadModel>> CreateAsync(
             [Required, FromHeader(Name = "X-Request-ID")] string requestId,
-            [FromBody] PartnerCreateRequest request)
+            [FromBody] LeadCreateRequest request)
         {
             return Ok();
         }
@@ -59,8 +59,8 @@ namespace MarketingBox.RegistrationApi.Controllers
         /// <remarks>
         /// </remarks>
         [HttpPut("{partnerId}")]
-        [ProducesResponseType(typeof(PartnerModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<PartnerModel>> UpdateAsync(
+        [ProducesResponseType(typeof(LeadModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LeadModel>> UpdateAsync(
             [Required, FromHeader(Name = "X-Request-ID")] string requestId,
             [Required, FromRoute] long partnerId,
             [FromBody] PartnerUpdateRequest request)
