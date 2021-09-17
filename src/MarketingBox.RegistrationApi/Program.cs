@@ -14,7 +14,7 @@ namespace MarketingBox.RegistrationApi
 {
     public class Program
     {
-        public const string SettingsFileName = ".marketingbox";
+        public const string SettingsFileName = ".marketingboxregistrationapi";
 
         public static SettingsModel Settings { get; private set; }
 
@@ -67,7 +67,7 @@ namespace MarketingBox.RegistrationApi
                     Console.WriteLine($"HTTP PORT: {httpPort}");
                     Console.WriteLine($"GRPC PORT: {grpcPort}");
 
-                    webBuilder.ConfigureKestrel(options =>
+                        webBuilder.ConfigureKestrel(options =>
                     {
                         options.Listen(IPAddress.Any, int.Parse(httpPort), o => o.Protocols = HttpProtocols.Http1);
                         options.Listen(IPAddress.Any, int.Parse(grpcPort), o => o.Protocols = HttpProtocols.Http2);
