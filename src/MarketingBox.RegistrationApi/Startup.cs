@@ -63,12 +63,7 @@ namespace MarketingBox.RegistrationApi
 
             app.UseRouting();
 
-            app.UseRouting();
-
             app.UseCors();
-
-            //if (_useJwtAuth)
-            //    app.UseAuthentication();
 
             app.UseAuthorization();
 
@@ -116,11 +111,6 @@ namespace MarketingBox.RegistrationApi
             {
                 options.AddModelStateDictionaryResponse(code);
             }
-
-            //if (_useJwtAuth)
-            //{
-            //    options.AddJwtBearerAuthorization();
-            //}
         }
 
         protected virtual void ConfigureMvcNewtonsoftJsonOptions(MvcNewtonsoftJsonOptions options)

@@ -13,5 +13,11 @@ namespace MarketingBox.RegistrationApi.Settings
 
         [YamlProperty("MarketingBoxRegistrationApi.ElkLogs")]
         public LogElkSettings ElkLogs { get; set; }
+
+        [YamlProperty("MarketingBoxRegistrationApi.RegistrationServiceUrl")]
+        public string RegistrationServiceUrl { get; set; }
+
+        [YamlProperty("MarketingBoxRegistrationApi.MyNoSqlReaderHostPort")]
+        public string MyNoSqlReaderHostPort { get; set; }
     }
 }

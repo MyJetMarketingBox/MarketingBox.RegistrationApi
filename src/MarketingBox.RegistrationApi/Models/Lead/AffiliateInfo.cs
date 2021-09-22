@@ -1,8 +1,8 @@
 ﻿namespace MarketingBox.RegistrationApi.Models.Lead
 {
-    public class PartnerInfo
+    public class AffiliateInfo
     {
-        public string PartnerId { get; set; }
+        public string AfiliateId { get; set; }
 
         public string CampaignId { get; set; }
 
