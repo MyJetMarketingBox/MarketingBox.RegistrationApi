@@ -1,10 +1,5 @@
-﻿using System.Collections.Generic;
-using Destructurama.Attributed;
-using Microsoft.AspNetCore.JsonPatch.Operations;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using Swashbuckle.AspNetCore.SwaggerGen;
+﻿using Destructurama.Attributed;
+
 
 namespace MarketingBox.RegistrationApi.Models.Lead.Requests
 {

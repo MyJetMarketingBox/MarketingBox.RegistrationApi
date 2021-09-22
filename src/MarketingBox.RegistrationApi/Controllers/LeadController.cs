@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MarketingBox.Registration.Service.Grpc;
-using MarketingBox.Registration.Service.Grpc.Models.Common;
 using MarketingBox.Registration.Service.Grpc.Models.Leads;
 using MarketingBox.RegistrationApi.Models.Lead;
 using MarketingBox.RegistrationApi.Models.Lead.Requests;
@@ -37,7 +36,6 @@ namespace MarketingBox.RegistrationApi.Controllers
             [FromBody] LeadCreateRequest request)
         {
 
-            //var tenantId = this.GetTenantId();
             var response = await _leadService.CreateAsync(
                 new Registration.Service.Grpc.Models.Leads.Requests.LeadCreateRequest()
                 {
@@ -86,7 +84,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                 return NotFound();
 
             return Ok(new LeadModel
-            { 
+            {
                 LeadId = Convert.ToInt64(response.BrandInfo.Data.UniqueId),
                 BrandInfo = new BrandInfo()
                 {
@@ -100,7 +98,7 @@ namespace MarketingBox.RegistrationApi.Controllers
             });
         }
 
-        public async Task<LeadRouteInfo> BrandRegisterAsync(LeadCreateRequest leadRequest)
+        private async Task<LeadRouteInfo> BrandRegisterAsync(LeadCreateRequest leadRequest)
         {
             long affiliateId = 1;
             long boxId = 2;
