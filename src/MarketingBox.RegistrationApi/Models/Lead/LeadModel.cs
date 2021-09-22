@@ -21,6 +21,6 @@ namespace MarketingBox.RegistrationApi.Models.Lead
 
         public string LoginUrl { get; set; }
 
-        public string Broker { get; set; }
+        public string Brand { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using MarketingBox.Affiliate.Service.MyNoSql.Boxes;
+using MarketingBox.Affiliate.Service.MyNoSql.Partners;
 using MarketingBox.Registration.Service.Client;
 using MyJetWallet.Sdk.NoSql;
 using MyNoSqlServer.Abstractions;
@@ -14,9 +15,9 @@ namespace MarketingBox.RegistrationApi.Modules
             builder.RegisterRegistrationServiceClient(Program.Settings.RegistrationServiceUrl);
             var noSqlClient = builder.CreateNoSqlClient(Program.ReloadedSettings(e => e.MyNoSqlReaderHostPort));
 
-            var subs = new MyNoSqlReadRepository<BoxNoSql>(noSqlClient, BoxNoSql.TableName);
-            builder.RegisterInstance(subs)
-                .As<IMyNoSqlServerDataReader<BoxNoSql>>();
+            var partners = new MyNoSqlReadRepository<PartnerNoSql>(noSqlClient, PartnerNoSql.TableName);
+            builder.RegisterInstance(partners)
+                .As<IMyNoSqlServerDataReader<PartnerNoSql>>();
         }
     }
 }

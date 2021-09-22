@@ -39,8 +39,9 @@ namespace MarketingBox.RegistrationApi.Models.Lead.Requests
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Ip { get; set; }
         #endregion
-        
+
         #region Additional parameters
+        public long OfferId { get; set; }
         public string So { get; set; }
         public string Sub { get; set; }
         public string Sub1 { get; set; }

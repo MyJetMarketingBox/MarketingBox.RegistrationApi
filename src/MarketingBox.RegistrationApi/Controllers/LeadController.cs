@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using MarketingBox.Affiliate.Service.MyNoSql.Boxes;
+using MarketingBox.Affiliate.Service.MyNoSql.Partners;
 using MarketingBox.Registration.Service.Grpc;
 using MarketingBox.Registration.Service.Grpc.Models.Leads;
 using MarketingBox.RegistrationApi.Models.Lead;
 using MarketingBox.RegistrationApi.Models.Lead.Requests;
 using MarketingBox.RegistrationApi.Pagination;
+using MyNoSqlServer.Abstractions;
 
 namespace MarketingBox.RegistrationApi.Controllers
 {
@@ -16,10 +19,13 @@ namespace MarketingBox.RegistrationApi.Controllers
     public class LeadController : ControllerBase
     {
         private readonly ILeadService _leadService;
+        private readonly IMyNoSqlServerDataReader<PartnerNoSql> _boxIndexNoSqlServerDataReader;
 
-        public LeadController(ILeadService leadService)
+        public LeadController(ILeadService leadService,
+            IMyNoSqlServerDataReader<PartnerNoSql> boxIndexNoSqlServerDataReader)
         {
             _leadService = leadService;
+            _boxIndexNoSqlServerDataReader = boxIndexNoSqlServerDataReader;
         }
 
         /// <summary>
@@ -30,11 +36,12 @@ namespace MarketingBox.RegistrationApi.Controllers
         [ProducesResponseType(typeof(LeadModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<LeadModel>> CreateAsync(
             [Required, FromHeader(Name = "affiliate-id")]
-            string affiliateId,
+            long affiliateId,
             [Required, FromHeader(Name = "api-key")]
             string apikey,
             [FromBody] LeadCreateRequest request)
         {
+            //var partner = await _partnerService.CreateAsync(new Affiliate.Service.Grpc.Models.Partners.Messages.PartnerCreateRequest()
 
             var response = await _leadService.CreateAsync(
                 new Registration.Service.Grpc.Models.Leads.Requests.LeadCreateRequest()
@@ -48,6 +55,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                         Ip = request.Ip,
                         Password = request.Password,
                         Phone = request.Phone
+                        
                     },
                     AdditionalInfo = new Registration.Service.Grpc.Models.Leads.LeadAdditionalInfo()
                     {
@@ -64,8 +72,13 @@ namespace MarketingBox.RegistrationApi.Controllers
                         Sub9 = request.Sub9,
                         Sub10 = request.Sub10
                     },
-                    Route = await BrandRegisterAsync(request)
-                });
+                    AuthInfo = new LeadAuthInfo()
+                    {
+                        AffiliateId = affiliateId,
+                        ApiKey = apikey,
+                        BoxId = request.OfferId
+                    }
+        });
 
             return MapToResponse(response);
         }
@@ -90,7 +103,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                 {
                     UniqueId = response.BrandInfo.Data.UniqueId,
                     Email = response.BrandInfo.Data.Email,
-                    Broker = response.BrandInfo.Data.Broker,
+                    Brand = response.BrandInfo.Data.Broker,
                     CustomerId = response.BrandInfo.Data.CustomerId,
                     LoginUrl = response.BrandInfo.Data.LoginUrl,
                     Token = response.BrandInfo.Data.Token
