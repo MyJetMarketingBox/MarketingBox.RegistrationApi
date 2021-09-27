@@ -88,7 +88,7 @@ namespace MarketingBox.RegistrationApi.Controllers
         {
             if (response.Error != null)
             {
-                ModelState.AddModelError("", response.Error.Message);
+                ModelState.AddModelError("Message", response.Error.Message);
 
                 return BadRequest(ModelState);
             }
