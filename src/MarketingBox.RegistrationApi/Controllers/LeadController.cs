@@ -9,7 +9,6 @@ using MarketingBox.Registration.Service.Grpc;
 using MarketingBox.Registration.Service.Grpc.Models.Leads;
 using MarketingBox.RegistrationApi.Models.Lead;
 using MarketingBox.RegistrationApi.Models.Lead.Requests;
-using MarketingBox.RegistrationApi.Pagination;
 using MyNoSqlServer.Abstractions;
 
 namespace MarketingBox.RegistrationApi.Controllers
@@ -41,8 +40,6 @@ namespace MarketingBox.RegistrationApi.Controllers
             string apikey,
             [FromBody] LeadCreateRequest request)
         {
-            //var partner = await _partnerService.CreateAsync(new Affiliate.Service.Grpc.Models.Partners.Messages.PartnerCreateRequest()
-
             var response = await _leadService.CreateAsync(
                 new Registration.Service.Grpc.Models.Leads.Requests.LeadCreateRequest()
                 {
