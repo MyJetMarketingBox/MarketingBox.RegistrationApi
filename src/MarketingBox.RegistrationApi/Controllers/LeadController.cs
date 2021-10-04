@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using MarketingBox.Affiliate.Service.MyNoSql.Boxes;
 using MarketingBox.Affiliate.Service.MyNoSql.Partners;
 using MarketingBox.Registration.Service.Grpc;
 using MarketingBox.Registration.Service.Grpc.Models.Leads;
@@ -41,7 +40,7 @@ namespace MarketingBox.RegistrationApi.Controllers
             [FromBody] LeadCreateRequest request)
         {
             var response = await _leadService.CreateAsync(
-                new Registration.Service.Grpc.Models.Leads.Requests.LeadCreateRequest()
+                new Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateRequest()
                 {
                     GeneralInfo = new Registration.Service.Grpc.Models.Leads.LeadGeneralInfo()
                     {
