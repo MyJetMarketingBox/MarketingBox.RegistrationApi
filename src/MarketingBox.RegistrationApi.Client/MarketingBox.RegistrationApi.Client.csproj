@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MarketingBox.RegistrationApi.Grpc\MarketingBox.RegistrationApi.Grpc.csproj" />
+    <ProjectReference PrivateAssets="All" Include="..\MarketingBox.RegistrationApi.Grpc\MarketingBox.RegistrationApi.Grpc.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

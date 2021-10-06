@@ -12,12 +12,7 @@ namespace MarketingBox.RegistrationApi.Models.Lead
     {
         public string CustomerId { get; set; }
 
-        [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
-        public string Email { get; set; }
-
         public string Token { get; set; }
-
-        public string UniqueId { get; set; }
 
         public string LoginUrl { get; set; }
 

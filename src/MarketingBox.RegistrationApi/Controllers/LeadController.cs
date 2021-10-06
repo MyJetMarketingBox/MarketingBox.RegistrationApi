@@ -95,12 +95,10 @@ namespace MarketingBox.RegistrationApi.Controllers
 
             return Ok(new LeadModel
             {
-                LeadId = Convert.ToInt64(response.BrandInfo.Data.UniqueId),
+                LeadId = Convert.ToInt64(response.LeadId),
                 BrandInfo = new BrandInfo()
                 {
-                    UniqueId = response.BrandInfo.Data.UniqueId,
-                    Email = response.BrandInfo.Data.Email,
-                    Brand = response.BrandInfo.Data.Broker,
+                    Brand = response.BrandInfo.Brand,
                     CustomerId = response.BrandInfo.Data.CustomerId,
                     LoginUrl = response.BrandInfo.Data.LoginUrl,
                     Token = response.BrandInfo.Data.Token
