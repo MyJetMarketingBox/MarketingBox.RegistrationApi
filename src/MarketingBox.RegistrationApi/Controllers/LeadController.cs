@@ -9,6 +9,7 @@ using MarketingBox.Registration.Service.Grpc.Models.Leads;
 using MarketingBox.RegistrationApi.Models.Lead;
 using MarketingBox.RegistrationApi.Models.Lead.Requests;
 using MyNoSqlServer.Abstractions;
+using Newtonsoft.Json;
 
 namespace MarketingBox.RegistrationApi.Controllers
 {
@@ -84,8 +85,8 @@ namespace MarketingBox.RegistrationApi.Controllers
         {
             if (response.Error != null)
             {
-                ModelState.AddModelError("Message", response.Error.Message);
-
+                ModelState.AddModelError("Message", response.Error.Message + 
+                    JsonConvert.SerializeObject(response.OriginalData));
                 return BadRequest(ModelState);
             }
 
