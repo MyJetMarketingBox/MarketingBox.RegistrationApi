@@ -85,9 +85,10 @@ namespace MarketingBox.RegistrationApi.Controllers
         {
             if (response.Error != null)
             {
-                ModelState.AddModelError("Message", response.Error.Message + 
-                    JsonConvert.SerializeObject(response.OriginalData));
-                return BadRequest(ModelState);
+                //ModelState.AddModelError("Message", response.Error.Message + 
+                //    JsonConvert.SerializeObject(response.OriginalData));
+                //TODO: Create failed response
+                return Ok(response);
             }
 
             if (response.BrandInfo == null)
