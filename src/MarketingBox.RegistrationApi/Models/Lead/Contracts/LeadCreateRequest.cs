@@ -1,28 +1,7 @@
 ﻿using Destructurama.Attributed;
 
-
-namespace MarketingBox.RegistrationApi.Models.Lead.Requests
+namespace MarketingBox.RegistrationApi.Models.Lead.Contracts
 {
-    /// <summary>
-    /// Operation filter to add the requirement of the custom header
-    /// </summary>
-    //public class MyHeaderFilter : IOperationFilter
-    //{
-    //    public void Apply(OpenApiOperation operation, OperationFilterContext context)
-    //    {
-    //        if (operation.Parameters == null)
-    //            operation.Parameters = new List<OpenApiParameter>();
-
-    //        operation.Parameters.Add(new NonBodyParameter
-    //        {
-    //            Name = "MY-HEADER",
-    //            In = "header",
-    //            Type = "string",
-    //            Required = true // set to false if this is optional
-    //        });
-    //    }
-    //}
-
     public class LeadCreateRequest
     {
         #region Personal info
@@ -38,10 +17,11 @@ namespace MarketingBox.RegistrationApi.Models.Lead.Requests
         public string Phone { get; set; }
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Ip { get; set; }
+        public string Country { get; set; }
+        public long OfferId { get; set; }
         #endregion
 
         #region Additional parameters
-        public long OfferId { get; set; }
         public string So { get; set; }
         public string Sub { get; set; }
         public string Sub1 { get; set; }

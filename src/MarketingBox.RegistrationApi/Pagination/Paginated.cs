@@ -21,6 +21,8 @@ namespace MarketingBox.RegistrationApi.Pagination
 
     public class Paginated<TItem, TId>
     {
+        public int ResultCode { get; set; }
+        public string Message { get; set; }
         public Pagination<TId> Pagination { get; set; }
         public IReadOnlyCollection<TItem> Items { get; set; }
     }

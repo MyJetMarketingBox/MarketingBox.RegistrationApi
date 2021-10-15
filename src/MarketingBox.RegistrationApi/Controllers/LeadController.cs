@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using MarketingBox.Affiliate.Service.MyNoSql.Partners;
 using MarketingBox.Registration.Service.Grpc;
 using MarketingBox.Registration.Service.Grpc.Models.Leads;
+using MarketingBox.RegistrationApi.Domain.Extensions;
 using MarketingBox.RegistrationApi.Models.Lead;
-using MarketingBox.RegistrationApi.Models.Lead.Requests;
-using MyNoSqlServer.Abstractions;
-using Newtonsoft.Json;
+using MarketingBox.RegistrationApi.Models.Lead.Contracts;
+using MarketingBox.RegistrationApi.Models.Validators;
+using Microsoft.Extensions.Logging;
+
+using LeadGeneralInfo = MarketingBox.RegistrationApi.Models.Lead.LeadGeneralInfo;
 
 namespace MarketingBox.RegistrationApi.Controllers
 {
@@ -17,14 +19,14 @@ namespace MarketingBox.RegistrationApi.Controllers
     [Route("/api/register")]
     public class LeadController : ControllerBase
     {
+        private readonly ILogger<LeadController> _logger;
         private readonly ILeadService _leadService;
-        private readonly IMyNoSqlServerDataReader<PartnerNoSql> _boxIndexNoSqlServerDataReader;
 
         public LeadController(ILeadService leadService,
-            IMyNoSqlServerDataReader<PartnerNoSql> boxIndexNoSqlServerDataReader)
+            ILogger<LeadController> logger)
         {
             _leadService = leadService;
-            _boxIndexNoSqlServerDataReader = boxIndexNoSqlServerDataReader;
+            _logger = logger;
         }
 
         /// <summary>
@@ -32,97 +34,136 @@ namespace MarketingBox.RegistrationApi.Controllers
         /// <remarks>
         /// </remarks>
         [HttpPost]
-        [ProducesResponseType(typeof(LeadModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<LeadModel>> CreateAsync(
+        [ProducesResponseType(typeof(LeadCreateRespone), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LeadCreateRespone>> CreateAsync(
             [Required, FromHeader(Name = "affiliate-id")]
             long affiliateId,
             [Required, FromHeader(Name = "api-key")]
             string apikey,
             [FromBody] LeadCreateRequest request)
         {
+            _logger.LogInformation("Creating new Lead {@context}", request);
+            var validator = new LeadCreateValidations();
+            var results = await validator.ValidateAsync(request);
+            if (!results.IsValid)
+            {
+                return BadRequest(results.GetErrors());
+            }
+
             var response = await _leadService.CreateAsync(
-                new Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateRequest()
-                {
-                    GeneralInfo = new Registration.Service.Grpc.Models.Leads.LeadGeneralInfo()
-                    {
-                        CreatedAt = DateTime.UtcNow,
-                        Email = request.Email,
-                        FirstName = request.FirstName,
-                        LastName = request.LastName,
-                        Ip = request.Ip,
-                        Password = request.Password,
-                        Phone = request.Phone
-                        
-                    },
-                    AdditionalInfo = new Registration.Service.Grpc.Models.Leads.LeadAdditionalInfo()
-                    {
-                        So = request.So,
-                        Sub = request.Sub,
-                        Sub1 = request.Sub1,
-                        Sub2 = request.Sub2,
-                        Sub3 = request.Sub3,
-                        Sub4 = request.Sub4,
-                        Sub5 = request.Sub5,
-                        Sub6 = request.Sub6,
-                        Sub7 = request.Sub7,
-                        Sub8 = request.Sub8,
-                        Sub9 = request.Sub9,
-                        Sub10 = request.Sub10
-                    },
-                    AuthInfo = new LeadAuthInfo()
-                    {
-                        AffiliateId = affiliateId,
-                        ApiKey = apikey,
-                        BoxId = request.OfferId
-                    }
-        });
+                MapToGrpc(request, affiliateId, apikey));
 
             return MapToResponse(response);
         }
 
-
-        private ActionResult MapToResponse(Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateResponse response)
+        private static Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateRequest MapToGrpc(
+            LeadCreateRequest request,
+            long affiliateId, string apikey)
         {
-            if (response.Error != null)
+            var leadCreateRequest = new Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateRequest()
             {
-                //ModelState.AddModelError("Message", response.Error.Message + 
-                //    JsonConvert.SerializeObject(response.OriginalData));
-                //TODO: Create failed response
-                return Ok(response);
-            }
-
-            if (response.BrandInfo == null)
-                return NotFound();
-
-            return Ok(new LeadModel
-            {
-                LeadId = Convert.ToInt64(response.LeadId),
-                BrandInfo = new BrandInfo()
+                GeneralInfo = new Registration.Service.Grpc.Models.Leads.LeadGeneralInfo()
                 {
-                    Brand = response.BrandInfo.Brand,
-                    CustomerId = response.BrandInfo.Data.CustomerId,
-                    LoginUrl = response.BrandInfo.Data.LoginUrl,
-                    Token = response.BrandInfo.Data.Token
+                    CreatedAt = DateTime.UtcNow,
+                    Email = request.Email,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Ip = request.Ip,
+                    Password = request.Password,
+                    Phone = request.Phone
+
+                },
+                AdditionalInfo = new Registration.Service.Grpc.Models.Leads.LeadAdditionalInfo()
+                {
+                    So = request.So,
+                    Sub = request.Sub,
+                    Sub1 = request.Sub1,
+                    Sub2 = request.Sub2,
+                    Sub3 = request.Sub3,
+                    Sub4 = request.Sub4,
+                    Sub5 = request.Sub5,
+                    Sub6 = request.Sub6,
+                    Sub7 = request.Sub7,
+                    Sub8 = request.Sub8,
+                    Sub9 = request.Sub9,
+                    Sub10 = request.Sub10
+                },
+                AuthInfo = new LeadAuthInfo()
+                {
+                    AffiliateId = affiliateId,
+                    ApiKey = apikey,
+                    BoxId = request.OfferId
                 }
-            });
+            };
+            return leadCreateRequest;
         }
 
-        private async Task<LeadRouteInfo> BrandRegisterAsync(LeadCreateRequest leadRequest)
+        private ActionResult <LeadCreateRespone> MapToResponse(Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateResponse response)
         {
-            long affiliateId = 1;
-            long boxId = 2;
-            long campaignId = 3;
-            string brand = "Monfex";
-
-            var routeInfo = new LeadRouteInfo()
+            if (response.Status == Registration.Service.Grpc.Models.Common.ResultCode.Failed)
             {
-                AffiliateId = affiliateId,
-                BoxId = boxId,
-                CampaignId = campaignId,
-                Brand = brand
-            };
-            await Task.Delay(1000);
-            return routeInfo;
+                return Ok(new LeadCreateRespone
+                {
+                    OriginalData = new LeadGeneralInfo()
+                    {
+                        Email = response.OriginalData.Email,
+                        FirstName = response.OriginalData.FirstName,
+                        Ip = response.OriginalData.Ip,
+                        LastName = response.OriginalData.LastName,
+                        Password = response.OriginalData.Password,
+                        Phone = response.OriginalData.Phone,
+                        //TODO: Add country
+                        //Country = response.OriginalData.
+                    },
+                    ResultCode = (int)response.Status,
+                    Message = EnumExtensions.GetDescription((ResultCode)response.Status),
+                    Error = new Error()
+                    {
+                        Message = response.Error.Message,
+                        ErrorCode = (int)response.Error.Type
+                    }
+                });
+            }
+
+            if (response.Status == Registration.Service.Grpc.Models.Common.ResultCode.CompletedSuccessfully)
+            {
+                return Ok(new LeadCreateRespone
+                {
+                    LeadId = Convert.ToInt64(response.LeadId),
+                    BrandInfo = new BrandInfo()
+                    {
+                        Brand = response.BrandInfo.Brand,
+                        CustomerId = response.BrandInfo.Data.CustomerId,
+                        LoginUrl = response.BrandInfo.Data.LoginUrl,
+                        Token = response.BrandInfo.Data.Token
+                    },
+                    ResultCode = (int)response.Status,
+                    Message = EnumExtensions.GetDescription((ResultCode)response.Status),
+
+                });
+            }
+
+            return NotFound(new LeadCreateRespone
+            {
+                OriginalData = new LeadGeneralInfo()
+                {
+                    Email = response.OriginalData.Email,
+                    FirstName = response.OriginalData.FirstName,
+                    Ip = response.OriginalData.Ip,
+                    LastName = response.OriginalData.LastName,
+                    Password = response.OriginalData.Password,
+                    Phone = response.OriginalData.Phone,
+                    //TODO: Add country
+                    //Country = response.OriginalData.
+                },
+                ResultCode = (int)ResultCode.Failed,
+                Message = EnumExtensions.GetDescription(ResultCode.Failed),
+                Error = new Error()
+                {
+                    Message = response.Error.Message,
+                    ErrorCode = (int)ErrorType.Unknown
+                }
+            });
         }
     }
 }
