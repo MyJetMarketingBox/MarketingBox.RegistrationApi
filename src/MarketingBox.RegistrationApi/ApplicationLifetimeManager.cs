@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MyJetWallet.Sdk.NoSql;
 using MyJetWallet.Sdk.Service;
 
 namespace MarketingBox.RegistrationApi
