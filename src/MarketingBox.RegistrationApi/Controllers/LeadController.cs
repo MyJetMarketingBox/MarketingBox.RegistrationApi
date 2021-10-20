@@ -64,14 +64,13 @@ namespace MarketingBox.RegistrationApi.Controllers
             {
                 GeneralInfo = new Registration.Service.Grpc.Models.Leads.LeadGeneralInfo()
                 {
-                    CreatedAt = DateTime.UtcNow,
                     Email = request.Email,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     Ip = request.Ip,
                     Password = request.Password,
-                    Phone = request.Phone
-
+                    Phone = request.Phone,
+                    Country = request.Country,
                 },
                 AdditionalInfo = new Registration.Service.Grpc.Models.Leads.LeadAdditionalInfo()
                 {
@@ -93,7 +92,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                     AffiliateId = affiliateId,
                     ApiKey = apikey,
                     BoxId = request.OfferId
-                }
+                },
             };
             return leadCreateRequest;
         }
@@ -112,16 +111,15 @@ namespace MarketingBox.RegistrationApi.Controllers
                         LastName = response.OriginalData.LastName,
                         Password = response.OriginalData.Password,
                         Phone = response.OriginalData.Phone,
-                        //TODO: Add country
-                        //Country = response.OriginalData.
+                        Country = response.OriginalData.Country,
                     },
                     ResultCode = (int)response.Status,
                     Message = EnumExtensions.GetDescription((ResultCode)response.Status),
                     Error = new Error()
                     {
                         Message = response.Error.Message,
-                        ErrorCode = (int)response.Error.Type
-                    }
+                        ErrorCode = (int)response.Error.Type,
+                    },
                 });
             }
 
@@ -135,7 +133,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                         Brand = response.BrandInfo.Brand,
                         CustomerId = response.BrandInfo.Data.CustomerId,
                         LoginUrl = response.BrandInfo.Data.LoginUrl,
-                        Token = response.BrandInfo.Data.Token
+                        Token = response.BrandInfo.Data.Token,
                     },
                     ResultCode = (int)response.Status,
                     Message = EnumExtensions.GetDescription((ResultCode)response.Status),
@@ -153,8 +151,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                     LastName = response.OriginalData.LastName,
                     Password = response.OriginalData.Password,
                     Phone = response.OriginalData.Phone,
-                    //TODO: Add country
-                    //Country = response.OriginalData.
+                    Country = response.OriginalData.Country
                 },
                 ResultCode = (int)ResultCode.Failed,
                 Message = EnumExtensions.GetDescription(ResultCode.Failed),
