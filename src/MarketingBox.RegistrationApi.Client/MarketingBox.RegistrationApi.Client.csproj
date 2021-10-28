@@ -24,11 +24,11 @@
       $(TargetsForTfmSpecificBuildOutput);PackReferencedProjectOutputs
     </TargetsForTfmSpecificBuildOutput>
     <PackageId>MarketingBox.RegistrationApi.Client</PackageId>
-    <Authors>MyJetWallet</Authors>
-    <Company>MyJetWallet</Company>
+    <Authors>MyJetMarketingBox</Authors>
+    <Company>MyJetMarketingBox</Company>
     <Product>MarketingBox</Product>
-    <PackageProjectUrl>https://github.com/MyJetWallet/MarketingBox.RegistrationApi</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/MyJetWallet/MarketingBox.RegistrationApi</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/MyJetMarketingBox/MarketingBox.RegistrationApi</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MyJetMarketingBox/MarketingBox.RegistrationApi</RepositoryUrl>
   </PropertyGroup>
 
   <Target Name="PackReferencedProjectOutputs" DependsOnTargets="BuildOnlySettings;ResolveReferences">

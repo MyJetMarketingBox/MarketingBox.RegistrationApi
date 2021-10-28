@@ -105,13 +105,13 @@ namespace MarketingBox.RegistrationApi.Controllers
                 {
                     OriginalData = new LeadGeneralInfo()
                     {
-                        Email = response.OriginalData.Email,
-                        FirstName = response.OriginalData.FirstName,
-                        Ip = response.OriginalData.Ip,
-                        LastName = response.OriginalData.LastName,
-                        Password = response.OriginalData.Password,
-                        Phone = response.OriginalData.Phone,
-                        Country = response.OriginalData.Country,
+                        Email = response.OriginalData?.Email,
+                        FirstName = response.OriginalData?.FirstName,
+                        Ip = response.OriginalData?.Ip,
+                        LastName = response.OriginalData?.LastName,
+                        Password = response.OriginalData?.Password,
+                        Phone = response.OriginalData?.Phone,
+                        Country = response.OriginalData?.Country,
                     },
                     ResultCode = (int)response.Status,
                     Message = EnumExtensions.GetDescription((ResultCode)response.Status),
