@@ -1,4 +1,5 @@
-# Service.AssetsDictionary
+# MarketingBox.RegistrationApi
+
 
 ![Release Service](https://github.com/MyJetWallet/Service.AssetsDictionary/workflows/Release%20Service/badge.svg)
 
