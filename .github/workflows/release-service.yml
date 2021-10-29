@@ -59,7 +59,7 @@ jobs:
     - name: get uat kube yamls
       uses: actions/checkout@v2
       with:
-        repository: MyJetMarketingBox/kubernates-infrastructure
+        repository: MyJetMarketingBox/marketing-box-kubernates-infrastructure
         ref: uat        
         token: ${{ secrets.UAT_GIT_TOKEN }}
     - run: |
