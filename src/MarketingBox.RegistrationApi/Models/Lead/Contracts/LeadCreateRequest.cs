@@ -4,7 +4,7 @@ namespace MarketingBox.RegistrationApi.Models.Lead.Contracts
 {
     public class LeadCreateRequest
     {
-        #region Personal info
+        #region Personal Info
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string FirstName { get; set; }
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]

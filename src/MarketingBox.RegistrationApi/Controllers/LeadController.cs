@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MarketingBox.Registration.Service.Grpc;
+using MarketingBox.Registration.Service.Grpc.Models.Affiliate;
 using MarketingBox.Registration.Service.Grpc.Models.Leads;
 using MarketingBox.RegistrationApi.Domain.Extensions;
 using MarketingBox.RegistrationApi.Models.Lead;
@@ -21,12 +22,14 @@ namespace MarketingBox.RegistrationApi.Controllers
     {
         private readonly ILogger<LeadController> _logger;
         private readonly ILeadService _leadService;
+        private readonly IAffiliateAuthService _affiliateService;
 
         public LeadController(ILeadService leadService,
-            ILogger<LeadController> logger)
+            ILogger<LeadController> logger, IAffiliateAuthService affiliateService)
         {
             _leadService = leadService;
             _logger = logger;
+            _affiliateService = affiliateService;
         }
 
         /// <summary>
@@ -35,6 +38,7 @@ namespace MarketingBox.RegistrationApi.Controllers
         /// </remarks>
         [HttpPost]
         [ProducesResponseType(typeof(LeadCreateRespone), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<LeadCreateRespone>> CreateAsync(
             [Required, FromHeader(Name = "affiliate-id")]
             long affiliateId,
@@ -50,10 +54,24 @@ namespace MarketingBox.RegistrationApi.Controllers
                 return BadRequest(results.GetErrors());
             }
 
-            var response = await _leadService.CreateAsync(
+            var affResponse = await _affiliateService.IsValidAffiliateAuthInfoAsync(
+                MapToGrpc(request.OfferId, affiliateId, apikey));
+
+            if (affResponse.Status == Registration.Service.Grpc.Models.Common.ResultCode.RequiredAuthentication)
+            {
+                return NotFound(affResponse.Error.Message);
+            }
+
+            if (affResponse.Status == Registration.Service.Grpc.Models.Common.ResultCode.Failed)
+            {
+                return Unauthorized(affResponse.Error.Message);
+            }
+
+            var leadResponse = await _leadService.CreateAsync(
                 MapToGrpc(request, affiliateId, apikey));
 
-            return MapToResponse(response);
+
+            return MapToResponse(leadResponse);
         }
 
         private static Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateRequest MapToGrpc(
@@ -87,14 +105,31 @@ namespace MarketingBox.RegistrationApi.Controllers
                     Sub9 = request.Sub9,
                     Sub10 = request.Sub10
                 },
-                AuthInfo = new LeadAuthInfo()
+                AuthInfo = new AffiliateAuthInfo()
                 {
                     AffiliateId = affiliateId,
                     ApiKey = apikey,
                     BoxId = request.OfferId
                 },
+                
             };
             return leadCreateRequest;
+        }
+
+        private static Registration.Service.Grpc.Models.Affiliate.Contracts.AffiliateAuthRequest MapToGrpc(
+            long offerId, long affiliateId, string apikey)
+        {
+            var affCreateRequest = new Registration.Service.Grpc.Models.Affiliate.Contracts.AffiliateAuthRequest()
+            {
+                AuthInfo = new AffiliateAuthInfo()
+                {
+                    AffiliateId = affiliateId,
+                    ApiKey = apikey,
+                    BoxId = offerId
+                },
+
+            };
+            return affCreateRequest;
         }
 
         private ActionResult <LeadCreateRespone> MapToResponse(Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateResponse response)
