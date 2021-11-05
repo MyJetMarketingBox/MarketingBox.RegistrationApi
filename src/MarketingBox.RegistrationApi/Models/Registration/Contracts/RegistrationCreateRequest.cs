@@ -2,7 +2,7 @@
 
 namespace MarketingBox.RegistrationApi.Models.Lead.Contracts
 {
-    public class LeadCreateRequest
+    public class RegistrationCreateRequest
     {
         #region Personal Info
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]

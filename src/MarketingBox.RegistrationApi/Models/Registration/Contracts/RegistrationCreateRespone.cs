@@ -3,13 +3,13 @@ using JetBrains.Annotations;
 
 namespace MarketingBox.RegistrationApi.Models.Lead.Contracts
 {
-    public class LeadCreateRespone
+    public class RegistrationCreateRespone
     {
         public int ResultCode { get; set; }
         public string Message { get; set; }
-        public long? LeadId { get; set; }
+        public long? RegistrationId { get; set; }
         [CanBeNull] public BrandInfo BrandInfo { get; set; }
-        [CanBeNull] public LeadGeneralInfo OriginalData { get; set; }
+        [CanBeNull] public RegistrationGeneralInfo OriginalData { get; set; }
         [CanBeNull] public Error Error { get; set; }
     }
 

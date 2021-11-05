@@ -5,29 +5,26 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MarketingBox.Registration.Service.Grpc;
 using MarketingBox.Registration.Service.Grpc.Models.Affiliate;
-using MarketingBox.Registration.Service.Grpc.Models.Leads;
 using MarketingBox.RegistrationApi.Domain.Extensions;
 using MarketingBox.RegistrationApi.Models.Lead;
 using MarketingBox.RegistrationApi.Models.Lead.Contracts;
 using MarketingBox.RegistrationApi.Models.Validators;
 using Microsoft.Extensions.Logging;
 
-using LeadGeneralInfo = MarketingBox.RegistrationApi.Models.Lead.LeadGeneralInfo;
-
 namespace MarketingBox.RegistrationApi.Controllers
 {
     [ApiController]
     [Route("/api/register")]
-    public class LeadController : ControllerBase
+    public class RegistrationController : ControllerBase
     {
-        private readonly ILogger<LeadController> _logger;
-        private readonly ILeadService _leadService;
+        private readonly ILogger<RegistrationController> _logger;
+        private readonly IRegistrationService _registrationService;
         private readonly IAffiliateAuthService _affiliateService;
 
-        public LeadController(ILeadService leadService,
-            ILogger<LeadController> logger, IAffiliateAuthService affiliateService)
+        public RegistrationController(IRegistrationService registrationService,
+            ILogger<RegistrationController> logger, IAffiliateAuthService affiliateService)
         {
-            _leadService = leadService;
+            _registrationService = registrationService;
             _logger = logger;
             _affiliateService = affiliateService;
         }
@@ -37,17 +34,17 @@ namespace MarketingBox.RegistrationApi.Controllers
         /// <remarks>
         /// </remarks>
         [HttpPost]
-        [ProducesResponseType(typeof(LeadCreateRespone), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<LeadCreateRespone>> CreateAsync(
+        public async Task<ActionResult<RegistrationCreateRespone>> CreateAsync(
             [Required, FromHeader(Name = "affiliate-id")]
             long affiliateId,
             [Required, FromHeader(Name = "api-key")]
             string apikey,
-            [FromBody] LeadCreateRequest request)
+            [FromBody] RegistrationCreateRequest request)
         {
             _logger.LogInformation("Creating new Lead {@context}", request);
-            var validator = new LeadCreateValidations();
+            var validator = new RegistrationCreateValidations();
             var results = await validator.ValidateAsync(request);
             if (!results.IsValid)
             {
@@ -67,20 +64,20 @@ namespace MarketingBox.RegistrationApi.Controllers
                 return Unauthorized(affResponse.Error.Message);
             }
 
-            var leadResponse = await _leadService.CreateAsync(
+            var leadResponse = await _registrationService.CreateAsync(
                 MapToGrpc(request, affiliateId, apikey));
 
 
             return MapToResponse(leadResponse);
         }
 
-        private static Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateRequest MapToGrpc(
-            LeadCreateRequest request,
+        private static Registration.Service.Grpc.Models.Registrations.Contracts.RegistrationCreateRequest MapToGrpc(
+            RegistrationCreateRequest request,
             long affiliateId, string apikey)
         {
-            var leadCreateRequest = new Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateRequest()
+            var leadCreateRequest = new Registration.Service.Grpc.Models.Registrations.Contracts.RegistrationCreateRequest()
             {
-                GeneralInfo = new Registration.Service.Grpc.Models.Leads.LeadGeneralInfo()
+                GeneralInfo = new ()
                 {
                     Email = request.Email,
                     FirstName = request.FirstName,
@@ -90,7 +87,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                     Phone = request.Phone,
                     Country = request.Country,
                 },
-                AdditionalInfo = new Registration.Service.Grpc.Models.Leads.LeadAdditionalInfo()
+                AdditionalInfo = new ()
                 {
                     So = request.So,
                     Sub = request.Sub,
@@ -109,7 +106,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                 {
                     AffiliateId = affiliateId,
                     ApiKey = apikey,
-                    BoxId = request.OfferId
+                    CampaignId = request.OfferId
                 },
                 
             };
@@ -125,20 +122,20 @@ namespace MarketingBox.RegistrationApi.Controllers
                 {
                     AffiliateId = affiliateId,
                     ApiKey = apikey,
-                    BoxId = offerId
+                    CampaignId = offerId
                 },
 
             };
             return affCreateRequest;
         }
 
-        private ActionResult <LeadCreateRespone> MapToResponse(Registration.Service.Grpc.Models.Leads.Contracts.LeadCreateResponse response)
+        private ActionResult <RegistrationCreateRespone> MapToResponse(Registration.Service.Grpc.Models.Registrations.Contracts.RegistrationCreateResponse response)
         {
             if (response.Status == Registration.Service.Grpc.Models.Common.ResultCode.Failed)
             {
-                return Ok(new LeadCreateRespone
+                return Ok(new RegistrationCreateRespone
                 {
-                    OriginalData = new LeadGeneralInfo()
+                    OriginalData = new RegistrationGeneralInfo()
                     {
                         Email = response.OriginalData?.Email,
                         FirstName = response.OriginalData?.FirstName,
@@ -160,9 +157,9 @@ namespace MarketingBox.RegistrationApi.Controllers
 
             if (response.Status == Registration.Service.Grpc.Models.Common.ResultCode.CompletedSuccessfully)
             {
-                return Ok(new LeadCreateRespone
+                return Ok(new RegistrationCreateRespone
                 {
-                    LeadId = Convert.ToInt64(response.LeadId),
+                    RegistrationId = Convert.ToInt64(response.RegistrationId),
                     BrandInfo = new BrandInfo()
                     {
                         Brand = response.BrandInfo.Brand,
@@ -176,9 +173,9 @@ namespace MarketingBox.RegistrationApi.Controllers
                 });
             }
 
-            return NotFound(new LeadCreateRespone
+            return NotFound(new RegistrationCreateRespone
             {
-                OriginalData = new LeadGeneralInfo()
+                OriginalData = new RegistrationGeneralInfo()
                 {
                     Email = response.OriginalData.Email,
                     FirstName = response.OriginalData.FirstName,

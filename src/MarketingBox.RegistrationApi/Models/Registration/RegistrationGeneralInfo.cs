@@ -3,7 +3,7 @@ using Destructurama.Attributed;
 
 namespace MarketingBox.RegistrationApi.Models.Lead
 {
-    public class LeadGeneralInfo
+    public class RegistrationGeneralInfo
     {
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string FirstName { get; set; }
@@ -19,7 +19,7 @@ namespace MarketingBox.RegistrationApi.Models.Lead
         public string Ip { get; set; }
         public string Country { get; set; }
     }
-    public class LeadGeneralInfoWithoutPassword
+    public class RegistrationGeneralInfoWithoutPassword
     {
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string FirstName { get; set; }

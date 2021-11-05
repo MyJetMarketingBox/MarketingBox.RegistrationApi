@@ -3,9 +3,9 @@ using MarketingBox.RegistrationApi.Models.Lead.Contracts;
 
 namespace MarketingBox.RegistrationApi.Models.Validators
 {
-    public class LeadCreateValidations : AbstractValidator<LeadCreateRequest>
+    public class RegistrationCreateValidations : AbstractValidator<RegistrationCreateRequest>
     {
-        public LeadCreateValidations()
+        public RegistrationCreateValidations()
         {
             RuleFor(x => x.Email).NotEmpty().EmailAddress();
             RuleFor(x => x.Ip).NotEmpty().Length(7, 40);

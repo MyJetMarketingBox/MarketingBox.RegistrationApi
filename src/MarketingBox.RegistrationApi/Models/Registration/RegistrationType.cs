@@ -1,6 +1,6 @@
 ﻿namespace MarketingBox.RegistrationApi.Models.Lead
 {
-    public enum LeadType
+    public enum RegistrationType
     {
         Lead,
         Failure

@@ -15,12 +15,12 @@ namespace MarketingBox.RegistrationApi.Controllers
     public class ReportController : ControllerBase
     {
         private readonly ILogger<ReportController> _logger;
-        private readonly ILeadService _leadService;
+        private readonly IRegistrationService _registrationService;
 
-        public ReportController(ILeadService leadService,
+        public ReportController(IRegistrationService registrationService,
             ILogger<ReportController> logger)
         {
-            _leadService = leadService;
+            _registrationService = registrationService;
             _logger = logger;
         }
         /// <summary>
@@ -28,8 +28,8 @@ namespace MarketingBox.RegistrationApi.Controllers
         /// <remarks>
         /// </remarks>
         [HttpPost]
-        [ProducesResponseType(typeof(Paginated<LeadModel, long>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<Paginated<LeadModel, long>>> SearchAsync(
+        [ProducesResponseType(typeof(Paginated<RegistrationModel, long>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<Paginated<RegistrationModel, long>>> SearchAsync(
             [Required, FromHeader(Name = "affiliate-id")]
             long affiliateId,
             [Required, FromHeader(Name = "api-key")]
@@ -45,7 +45,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                 return BadRequest();
             }
 
-            //var response = await _leadService.CreateAsync(
+            //var response = await _registrationService.CreateAsync(
             //    MapToGrpc(request, affiliateId, apikey));
 
             //return MapToResponse(response);

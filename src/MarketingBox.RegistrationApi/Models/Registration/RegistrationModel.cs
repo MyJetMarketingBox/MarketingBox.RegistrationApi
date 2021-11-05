@@ -2,10 +2,10 @@
 
 namespace MarketingBox.RegistrationApi.Models.Lead
 {
-    public class LeadModel
+    public class RegistrationModel
     {
         public long LeadId { get; set; }
-        public LeadGeneralInfoWithoutPassword LeadInfo { get; set; }
+        public RegistrationGeneralInfoWithoutPassword RegistrationInfo { get; set; }
         public BrandInfo BrandInfo { get; set; }
     }
 }
