@@ -47,7 +47,7 @@ namespace MarketingBox.RegistrationApi
 
             services.AddHostedService<ApplicationLifetimeManager>();
 
-            services.AddMyTelemetry("SP-", Program.Settings.ZipkinUrl);
+            services.AddMyTelemetry("MB-", Program.Settings.ZipkinUrl);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
