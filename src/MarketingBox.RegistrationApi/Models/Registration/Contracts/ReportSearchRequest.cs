@@ -2,7 +2,7 @@
 using MarketingBox.RegistrationApi.Pagination;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MarketingBox.RegistrationApi.Models.Lead.Contracts
+namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
 {
     public class ReportSearchRequest : PaginationRequest<long?>
     {

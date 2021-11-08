@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using MarketingBox.Registration.Service.Grpc;
 using MarketingBox.Registration.Service.Grpc.Models.Affiliate;
 using MarketingBox.RegistrationApi.Domain.Extensions;
-using MarketingBox.RegistrationApi.Models.Lead;
-using MarketingBox.RegistrationApi.Models.Lead.Contracts;
+using MarketingBox.RegistrationApi.Models.Registration;
+using MarketingBox.RegistrationApi.Models.Registration.Contracts;
 using MarketingBox.RegistrationApi.Models.Validators;
 using Microsoft.Extensions.Logging;
 
@@ -51,22 +51,8 @@ namespace MarketingBox.RegistrationApi.Controllers
                 return BadRequest(results.GetErrors());
             }
 
-            var affResponse = await _affiliateService.IsValidAffiliateAuthInfoAsync(
-                MapToGrpc(request.OfferId, affiliateId, apikey));
-
-            if (affResponse.Status == Registration.Service.Grpc.Models.Common.ResultCode.RequiredAuthentication)
-            {
-                return NotFound(affResponse.Error.Message);
-            }
-
-            if (affResponse.Status == Registration.Service.Grpc.Models.Common.ResultCode.Failed)
-            {
-                return Unauthorized(affResponse.Error.Message);
-            }
-
             var leadResponse = await _registrationService.CreateAsync(
                 MapToGrpc(request, affiliateId, apikey));
-
 
             return MapToResponse(leadResponse);
         }
@@ -131,6 +117,32 @@ namespace MarketingBox.RegistrationApi.Controllers
 
         private ActionResult <RegistrationCreateRespone> MapToResponse(Registration.Service.Grpc.Models.Registrations.Contracts.RegistrationCreateResponse response)
         {
+            if (response.Status == Registration.Service.Grpc.Models.Common.ResultCode.RequiredAuthentication)
+            {
+                return Unauthorized(/*response.Error.Message*/
+                    new RegistrationCreateRespone
+                    {
+                        OriginalData = new RegistrationGeneralInfo()
+                        {
+                            Email = response.OriginalData.Email,
+                            FirstName = response.OriginalData.FirstName,
+                            Ip = response.OriginalData.Ip,
+                            LastName = response.OriginalData.LastName,
+                            Password = response.OriginalData.Password,
+                            Phone = response.OriginalData.Phone,
+                            Country = response.OriginalData.Country
+                        },
+                        ResultCode = (int)ResultCode.RequiredAuthentication,
+                        Message = EnumExtensions.GetDescription(ResultCode.RequiredAuthentication),
+                        Error = new Error()
+                        {
+                            Message = response.Error.Message,
+                            ErrorCode = (int)MarketingBox.Registration.Service.Grpc.Models.Common.ErrorType.InvalidAffiliateInfo
+                        }
+                    }
+                    );
+            }
+
             if (response.Status == Registration.Service.Grpc.Models.Common.ResultCode.Failed)
             {
                 return Ok(new RegistrationCreateRespone
@@ -190,7 +202,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                 Error = new Error()
                 {
                     Message = response.Error.Message,
-                    ErrorCode = (int)ErrorType.Unknown
+                    ErrorCode = (int)MarketingBox.Registration.Service.Grpc.Models.Common.ErrorType.Unknown
                 }
             });
         }

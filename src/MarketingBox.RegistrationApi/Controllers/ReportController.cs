@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MarketingBox.Registration.Service.Grpc;
-using MarketingBox.RegistrationApi.Models.Lead;
-using MarketingBox.RegistrationApi.Models.Lead.Contracts;
+using MarketingBox.RegistrationApi.Models.Registration;
+using MarketingBox.RegistrationApi.Models.Registration.Contracts;
 using MarketingBox.RegistrationApi.Pagination;
 using Microsoft.Extensions.Logging;
 

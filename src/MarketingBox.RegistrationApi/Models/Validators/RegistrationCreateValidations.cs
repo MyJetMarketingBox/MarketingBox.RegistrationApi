@@ -1,5 +1,5 @@
 using FluentValidation;
-using MarketingBox.RegistrationApi.Models.Lead.Contracts;
+using MarketingBox.RegistrationApi.Models.Registration.Contracts;
 
 namespace MarketingBox.RegistrationApi.Models.Validators
 {

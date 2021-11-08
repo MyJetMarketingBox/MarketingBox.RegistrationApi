@@ -1,6 +1,6 @@
 ﻿using Destructurama.Attributed;
 
-namespace MarketingBox.RegistrationApi.Models.Lead.Contracts
+namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
 {
     public class RegistrationCreateRequest
     {
