@@ -122,16 +122,6 @@ namespace MarketingBox.RegistrationApi.Controllers
                 return Unauthorized(/*response.Error.Message*/
                     new RegistrationCreateRespone
                     {
-                        OriginalData = new RegistrationGeneralInfo()
-                        {
-                            Email = response.OriginalData.Email,
-                            FirstName = response.OriginalData.FirstName,
-                            Ip = response.OriginalData.Ip,
-                            LastName = response.OriginalData.LastName,
-                            Password = response.OriginalData.Password,
-                            Phone = response.OriginalData.Phone,
-                            Country = response.OriginalData.Country
-                        },
                         ResultCode = (int)ResultCode.RequiredAuthentication,
                         Message = EnumExtensions.GetDescription(ResultCode.RequiredAuthentication),
                         Error = new Error()
