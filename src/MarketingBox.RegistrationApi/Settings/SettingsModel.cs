@@ -16,5 +16,8 @@ namespace MarketingBox.RegistrationApi.Settings
 
         [YamlProperty("MarketingBoxRegistrationApi.RegistrationServiceUrl")]
         public string RegistrationServiceUrl { get; set; }
+
+        [YamlProperty("MarketingBoxRegistrationApi.JaegerUrl")]
+        public string JaegerUrl { get; set; }
     }
 }
