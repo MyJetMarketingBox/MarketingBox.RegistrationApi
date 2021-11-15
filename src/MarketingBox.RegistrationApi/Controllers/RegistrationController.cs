@@ -10,11 +10,12 @@ using MarketingBox.RegistrationApi.Models.Registration;
 using MarketingBox.RegistrationApi.Models.Registration.Contracts;
 using MarketingBox.RegistrationApi.Models.Validators;
 using Microsoft.Extensions.Logging;
+using MarketingBox.RegistrationApi.Pagination;
 
 namespace MarketingBox.RegistrationApi.Controllers
 {
     [ApiController]
-    [Route("/api/register")]
+    [Route("/api/registrations")]
     public class RegistrationController : ControllerBase
     {
         private readonly ILogger<RegistrationController> _logger;
@@ -55,6 +56,59 @@ namespace MarketingBox.RegistrationApi.Controllers
                 MapToGrpc(request, affiliateId, apikey));
 
             return MapToResponse(leadResponse);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        [HttpGet]
+        [ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<Paginated<RegistrationModel, long>>> SearchAsync(
+            [Required, FromHeader(Name = "affiliate-id")]
+            long affiliateId,
+            [Required, FromHeader(Name = "api-key")]
+            string apikey,
+            [FromBody] ReportSearchRequest request)
+        {
+            _logger.LogInformation("Get Info {@context}", request);
+
+            if (request.Limit < 1 || request.Limit > 1000)
+            {
+                ModelState.AddModelError($"{nameof(request.Limit)}", "Should be in the range 1..1000");
+
+                return BadRequest();
+            }
+
+            //var response = await _registrationService.CreateAsync(
+            //    MapToGrpc(request, affiliateId, apikey));
+
+            //return MapToResponse(response);
+            return BadRequest("Not Implemented");
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        [HttpGet("{registrationId}")]
+        [ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<Paginated<RegistrationModel, long>>> SearchAsync(
+            [Required, FromHeader(Name = "affiliate-id")]
+            long affiliateId,
+            [Required, FromHeader(Name = "api-key")]
+            string apikey,
+            [Required, FromRoute] string registrationId)
+        {
+            _logger.LogInformation("Get Info {@context}", registrationId);
+
+            //var response = await _registrationService.CreateAsync(
+            //    MapToGrpc(request, affiliateId, apikey));
+
+            //return MapToResponse(response);
+            return BadRequest("Not Implemented");
         }
 
         private static Registration.Service.Grpc.Models.Registrations.Contracts.RegistrationCreateRequest MapToGrpc(
