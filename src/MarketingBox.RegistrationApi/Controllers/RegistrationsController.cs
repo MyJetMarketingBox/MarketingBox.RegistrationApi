@@ -28,11 +28,14 @@ namespace MarketingBox.RegistrationApi.Controllers
         private readonly ICustomerService _customerService;
 
         public RegistrationsController(IRegistrationService registrationService,
-            ILogger<RegistrationsController> logger, IAffiliateAuthService affiliateService)
+            ILogger<RegistrationsController> logger, 
+            IAffiliateAuthService affiliateService, 
+            ICustomerService customerService)
         {
             _registrationService = registrationService;
             _logger = logger;
             _affiliateService = affiliateService;
+            _customerService = customerService;
         }
         
         [HttpPost]
