@@ -9,62 +9,56 @@ using MarketingBox.Registration.Service.Grpc;
 using MarketingBox.Registration.Service.Grpc.Models;
 using MarketingBox.Registration.Service.Grpc.Models.Affiliate;
 using MarketingBox.RegistrationApi.Domain.Extensions;
-using MarketingBox.RegistrationApi.Extensions;
 using MarketingBox.RegistrationApi.Models;
 using MarketingBox.RegistrationApi.Models.Registration;
 using MarketingBox.RegistrationApi.Models.Registration.Contracts;
 using MarketingBox.RegistrationApi.Models.Validators;
 using Microsoft.Extensions.Logging;
-using MarketingBox.RegistrationApi.Pagination;
 using MarketingBox.Reporting.Service.Domain.Models;
 
 namespace MarketingBox.RegistrationApi.Controllers
 {
     [ApiController]
-    [Route("/api/customers")]
-    public class CustomerController : ControllerBase
+    [Route("/api/registrations")]
+    public class RegistrationsController : ControllerBase
     {
-        private readonly ILogger<CustomerController> _logger;
+        private readonly ILogger<RegistrationsController> _logger;
         private readonly IRegistrationService _registrationService;
         private readonly IAffiliateAuthService _affiliateService;
         private readonly ICustomerService _customerService;
 
-        public CustomerController(IRegistrationService registrationService,
-            ILogger<CustomerController> logger, IAffiliateAuthService affiliateService)
+        public RegistrationsController(IRegistrationService registrationService,
+            ILogger<RegistrationsController> logger, IAffiliateAuthService affiliateService)
         {
             _registrationService = registrationService;
             _logger = logger;
             _affiliateService = affiliateService;
         }
         
-        //[HttpPost]
-        //[ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        //public async Task<ActionResult<RegistrationCreateRespone>> CreateAsync(
-        //    [Required, FromHeader(Name = "affiliate-id")]
-        //    long affiliateId,
-        //    [Required, FromHeader(Name = "api-key")]
-        //    string apikey,
-        //    [FromBody] RegistrationCreateRequest request)
-        //{
-        //    _logger.LogInformation("Creating new Lead {@context}", request);
-        //    var validator = new RegistrationCreateValidations();
-        //    var results = await validator.ValidateAsync(request);
-        //    if (!results.IsValid)
-        //    {
-        //        return BadRequest(results.GetErrors());
-        //    }
-//
-        //    var leadResponse = await _registrationService.CreateAsync(
-        //        MapToGrpc(request, affiliateId, apikey));
-//
-        //    return MapToResponse(leadResponse);
-        //}
+        [HttpPost]
+        [ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<RegistrationCreateRespone>> CreateAsync(
+            [Required, FromHeader(Name = "affiliate-id")]
+            long affiliateId,
+            [Required, FromHeader(Name = "api-key")]
+            string apikey,
+            [FromBody] RegistrationCreateRequest request)
+        {
+            _logger.LogInformation("Creating new Lead {@context}", request);
+            var validator = new RegistrationCreateValidations();
+            var results = await validator.ValidateAsync(request);
+            if (!results.IsValid)
+            {
+                return BadRequest(results.GetErrors());
+            }
 
-        /// <summary>
-        /// </summary>
-        /// <remarks>
-        /// </remarks>
+            var leadResponse = await _registrationService.CreateAsync(
+                MapToGrpc(request, affiliateId, apikey));
+
+            return MapToResponse(leadResponse);
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(CustomerModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -77,7 +71,6 @@ namespace MarketingBox.RegistrationApi.Controllers
             {
                 AffiliateId = affiliateId,
                 ApiKey = apikey,
-                TenantId = this.GetTenantId(),
                 From = request.FromDate,
                 To = request.ToDate,
                 Type = request.Type
@@ -104,7 +97,6 @@ namespace MarketingBox.RegistrationApi.Controllers
             {
                 AffiliateId = affiliateId,
                 ApiKey = apikey,
-                TenantId = this.GetTenantId(),
                 UId = uid
             });
             
