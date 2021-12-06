@@ -66,9 +66,9 @@ namespace MarketingBox.RegistrationApi.Controllers
         /// <remarks>
         /// </remarks>
         [HttpGet]
-        [ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CustomerModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<Paginated<RegistrationModel, long>>> SearchAsync(
+        public async Task<ActionResult<CustomerModel>> SearchAsync(
             [Required, FromHeader(Name = "affiliate-id")] long affiliateId,
             [Required, FromHeader(Name = "api-key")] string apikey,
             [FromBody] ReportSearchRequest request)
@@ -93,9 +93,9 @@ namespace MarketingBox.RegistrationApi.Controllers
         }
         
         [HttpGet("{uid}")]
-        [ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CustomerModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<Paginated<RegistrationModel, long>>> SearchAsync(
+        public async Task<ActionResult<CustomerModel>> SearchAsync(
             [Required, FromHeader(Name = "affiliate-id")] long affiliateId,
             [Required, FromHeader(Name = "api-key")] string apikey,
             [Required, FromRoute] string uid)
