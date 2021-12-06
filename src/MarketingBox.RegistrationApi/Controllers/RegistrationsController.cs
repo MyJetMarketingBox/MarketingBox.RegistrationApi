@@ -14,7 +14,6 @@ using MarketingBox.RegistrationApi.Models.Registration;
 using MarketingBox.RegistrationApi.Models.Registration.Contracts;
 using MarketingBox.RegistrationApi.Models.Validators;
 using Microsoft.Extensions.Logging;
-using MarketingBox.Reporting.Service.Domain.Models;
 
 namespace MarketingBox.RegistrationApi.Controllers
 {
@@ -251,13 +250,13 @@ namespace MarketingBox.RegistrationApi.Controllers
                 }
             });
         }
-        private CustomerModel MapToModel(List<Customer> customers)
+        private CustomerModel MapToModel(List<CustomerGrpc> customers)
         {
             return new() {Customers = customers};
         }
-        private CustomerModel MapToModel(Customer customer)
+        private CustomerModel MapToModel(CustomerGrpc customer)
         {
-            return new() {Customers = new List<Customer>(){customer}};
+            return new() {Customers = new List<CustomerGrpc>(){customer}};
         }
     }
 }

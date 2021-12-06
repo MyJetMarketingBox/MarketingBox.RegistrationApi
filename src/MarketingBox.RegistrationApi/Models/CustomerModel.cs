@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using MarketingBox.Reporting.Service.Domain.Models;
+using MarketingBox.Registration.Service.Grpc.Models;
 
 namespace MarketingBox.RegistrationApi.Models
 {
     public class CustomerModel
     {
-        public List<Customer> Customers { get; set; }
+        public List<CustomerGrpc> Customers { get; set; }
     }
 }
