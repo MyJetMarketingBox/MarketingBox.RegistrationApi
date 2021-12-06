@@ -8,12 +8,15 @@ using System.Threading.Tasks;
 using MarketingBox.Registration.Service.Grpc;
 using MarketingBox.Registration.Service.Grpc.Models;
 using MarketingBox.Registration.Service.Grpc.Models.Affiliate;
+using MarketingBox.Registration.Service.Grpc.Models.Common;
 using MarketingBox.RegistrationApi.Domain.Extensions;
 using MarketingBox.RegistrationApi.Models;
 using MarketingBox.RegistrationApi.Models.Registration;
 using MarketingBox.RegistrationApi.Models.Registration.Contracts;
 using MarketingBox.RegistrationApi.Models.Validators;
 using Microsoft.Extensions.Logging;
+using Error = MarketingBox.RegistrationApi.Models.Registration.Contracts.Error;
+using ResultCode = MarketingBox.RegistrationApi.Models.Registration.Contracts.ResultCode;
 
 namespace MarketingBox.RegistrationApi.Controllers
 {
@@ -77,10 +80,15 @@ namespace MarketingBox.RegistrationApi.Controllers
                 To = request.ToDate,
                 Type = request.Type
             });
-            
-            if (serviceResponse.Error != null)
-                return BadRequest(serviceResponse.Error.Message);
 
+            if (serviceResponse.Error != null)
+            {
+                if (serviceResponse.Error.Type == ErrorType.Unauthorized)
+                    return Unauthorized();
+
+                return BadRequest();
+            }
+            
             if (serviceResponse.Customers == null || !serviceResponse.Customers.Any())
                 return NotFound();
 
@@ -103,7 +111,12 @@ namespace MarketingBox.RegistrationApi.Controllers
             });
             
             if (serviceResponse.Error != null)
-                return BadRequest(serviceResponse.Error.Message);
+            {
+                if (serviceResponse.Error.Type == ErrorType.Unauthorized)
+                    return Unauthorized();
+
+                return BadRequest();
+            }
 
             if (serviceResponse.Customer == null)
                 return NotFound();
