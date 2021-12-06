@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
 {
-    public class ReportSearchRequest : PaginationRequest<long?>
+    public class CustomerSearchRequest
     {
         [FromQuery(Name = "fromDate")]
         public DateTime FromDate { get; set; }

@@ -71,7 +71,7 @@ namespace MarketingBox.RegistrationApi.Controllers
         public async Task<ActionResult<CustomerModel>> SearchAsync(
             [Required, FromHeader(Name = "affiliate-id")] long affiliateId,
             [Required, FromHeader(Name = "api-key")] string apikey,
-            [FromBody] ReportSearchRequest request)
+            [FromQuery] CustomerSearchRequest request)
         {
             var serviceResponse = await _customerService.GetCustomers(new GetCustomersRequest()
             {
