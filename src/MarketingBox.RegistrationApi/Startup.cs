@@ -95,6 +95,7 @@ namespace MarketingBox.RegistrationApi
         {
             builder.RegisterModule<SettingsModule>();
             builder.RegisterModule<ServiceModule>();
+            builder.RegisterModule<ClientModule>();
         }
         public ISet<int> ModelStateDictionaryResponseCodes { get; }
         protected virtual void ConfigureSwaggerGenOptions(SwaggerGenOptions options)

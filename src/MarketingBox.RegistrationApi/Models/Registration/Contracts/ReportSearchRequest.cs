@@ -1,5 +1,6 @@
 ﻿using System;
 using MarketingBox.RegistrationApi.Pagination;
+using MarketingBox.Reporting.Service.Grpc.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
@@ -13,6 +14,6 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
         public DateTime ToDate { get; set; }
 
         [FromQuery(Name = "type")]
-        public int Type { get; set; }
+        public CustomersReportType Type { get; set; }
     }
 }

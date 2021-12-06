@@ -1,62 +1,65 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using MarketingBox.Registration.Service.Grpc;
+using MarketingBox.Registration.Service.Grpc.Models;
 using MarketingBox.Registration.Service.Grpc.Models.Affiliate;
 using MarketingBox.RegistrationApi.Domain.Extensions;
+using MarketingBox.RegistrationApi.Extensions;
+using MarketingBox.RegistrationApi.Models;
 using MarketingBox.RegistrationApi.Models.Registration;
 using MarketingBox.RegistrationApi.Models.Registration.Contracts;
 using MarketingBox.RegistrationApi.Models.Validators;
 using Microsoft.Extensions.Logging;
 using MarketingBox.RegistrationApi.Pagination;
+using MarketingBox.Reporting.Service.Domain.Models;
 
 namespace MarketingBox.RegistrationApi.Controllers
 {
     [ApiController]
-    [Route("/api/registrations")]
-    public class RegistrationController : ControllerBase
+    [Route("/api/customers")]
+    public class CustomerController : ControllerBase
     {
-        private readonly ILogger<RegistrationController> _logger;
+        private readonly ILogger<CustomerController> _logger;
         private readonly IRegistrationService _registrationService;
         private readonly IAffiliateAuthService _affiliateService;
+        private readonly ICustomerService _customerService;
 
-        public RegistrationController(IRegistrationService registrationService,
-            ILogger<RegistrationController> logger, IAffiliateAuthService affiliateService)
+        public CustomerController(IRegistrationService registrationService,
+            ILogger<CustomerController> logger, IAffiliateAuthService affiliateService)
         {
             _registrationService = registrationService;
             _logger = logger;
             _affiliateService = affiliateService;
         }
-
-        /// <summary>
-        /// </summary>
-        /// <remarks>
-        /// </remarks>
-        [HttpPost]
-        [ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<RegistrationCreateRespone>> CreateAsync(
-            [Required, FromHeader(Name = "affiliate-id")]
-            long affiliateId,
-            [Required, FromHeader(Name = "api-key")]
-            string apikey,
-            [FromBody] RegistrationCreateRequest request)
-        {
-            _logger.LogInformation("Creating new Lead {@context}", request);
-            var validator = new RegistrationCreateValidations();
-            var results = await validator.ValidateAsync(request);
-            if (!results.IsValid)
-            {
-                return BadRequest(results.GetErrors());
-            }
-
-            var leadResponse = await _registrationService.CreateAsync(
-                MapToGrpc(request, affiliateId, apikey));
-
-            return MapToResponse(leadResponse);
-        }
+        
+        //[HttpPost]
+        //[ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        //public async Task<ActionResult<RegistrationCreateRespone>> CreateAsync(
+        //    [Required, FromHeader(Name = "affiliate-id")]
+        //    long affiliateId,
+        //    [Required, FromHeader(Name = "api-key")]
+        //    string apikey,
+        //    [FromBody] RegistrationCreateRequest request)
+        //{
+        //    _logger.LogInformation("Creating new Lead {@context}", request);
+        //    var validator = new RegistrationCreateValidations();
+        //    var results = await validator.ValidateAsync(request);
+        //    if (!results.IsValid)
+        //    {
+        //        return BadRequest(results.GetErrors());
+        //    }
+//
+        //    var leadResponse = await _registrationService.CreateAsync(
+        //        MapToGrpc(request, affiliateId, apikey));
+//
+        //    return MapToResponse(leadResponse);
+        //}
 
         /// <summary>
         /// </summary>
@@ -66,49 +69,52 @@ namespace MarketingBox.RegistrationApi.Controllers
         [ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<Paginated<RegistrationModel, long>>> SearchAsync(
-            [Required, FromHeader(Name = "affiliate-id")]
-            long affiliateId,
-            [Required, FromHeader(Name = "api-key")]
-            string apikey,
+            [Required, FromHeader(Name = "affiliate-id")] long affiliateId,
+            [Required, FromHeader(Name = "api-key")] string apikey,
             [FromBody] ReportSearchRequest request)
         {
-            _logger.LogInformation("Get Info {@context}", request);
-
-            if (request.Limit < 1 || request.Limit > 1000)
+            var serviceResponse = await _customerService.GetCustomers(new GetCustomersRequest()
             {
-                ModelState.AddModelError($"{nameof(request.Limit)}", "Should be in the range 1..1000");
+                AffiliateId = affiliateId,
+                ApiKey = apikey,
+                TenantId = this.GetTenantId(),
+                From = request.FromDate,
+                To = request.ToDate,
+                Type = request.Type
+            });
+            
+            if (serviceResponse.Error != null)
+                return BadRequest(serviceResponse.Error.Message);
 
-                return BadRequest();
-            }
+            if (serviceResponse.Customers == null || !serviceResponse.Customers.Any())
+                return NotFound();
 
-            //var response = await _registrationService.CreateAsync(
-            //    MapToGrpc(request, affiliateId, apikey));
-
-            //return MapToResponse(response);
-            return BadRequest("Not Implemented");
+            return Ok(MapToModel(serviceResponse.Customers));
         }
-
-        /// <summary>
-        /// </summary>
-        /// <remarks>
-        /// </remarks>
-        [HttpGet("{registrationId}")]
+        
+        [HttpGet("{uid}")]
         [ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<Paginated<RegistrationModel, long>>> SearchAsync(
-            [Required, FromHeader(Name = "affiliate-id")]
-            long affiliateId,
-            [Required, FromHeader(Name = "api-key")]
-            string apikey,
-            [Required, FromRoute] string registrationId)
+            [Required, FromHeader(Name = "affiliate-id")] long affiliateId,
+            [Required, FromHeader(Name = "api-key")] string apikey,
+            [Required, FromRoute] string uid)
         {
-            _logger.LogInformation("Get Info {@context}", registrationId);
+            var serviceResponse = await _customerService.GetCustomer(new GetCustomerRequest()
+            {
+                AffiliateId = affiliateId,
+                ApiKey = apikey,
+                TenantId = this.GetTenantId(),
+                UId = uid
+            });
+            
+            if (serviceResponse.Error != null)
+                return BadRequest(serviceResponse.Error.Message);
 
-            //var response = await _registrationService.CreateAsync(
-            //    MapToGrpc(request, affiliateId, apikey));
+            if (serviceResponse.Customer == null)
+                return NotFound();
 
-            //return MapToResponse(response);
-            return BadRequest("Not Implemented");
+            return Ok(MapToModel(serviceResponse.Customer));
         }
 
         private static Registration.Service.Grpc.Models.Registrations.Contracts.RegistrationCreateRequest MapToGrpc(
@@ -249,6 +255,14 @@ namespace MarketingBox.RegistrationApi.Controllers
                     ErrorCode = (int)MarketingBox.Registration.Service.Grpc.Models.Common.ErrorType.Unknown
                 }
             });
+        }
+        private CustomerModel MapToModel(List<Customer> customers)
+        {
+            return new() {Customers = customers};
+        }
+        private CustomerModel MapToModel(Customer customer)
+        {
+            return new() {Customers = new List<Customer>(){customer}};
         }
     }
 }
