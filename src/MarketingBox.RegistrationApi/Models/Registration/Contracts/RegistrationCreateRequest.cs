@@ -7,23 +7,34 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
         #region Personal Info
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string FirstName { get; set; }
+
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string LastName { get; set; }
+        
         [LogMasked(PreserveLength = true)]
         public string Password { get; set; }
+        
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Email { get; set; }
+        
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Phone { get; set; }
+        
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Ip { get; set; }
+        
         public string Country { get; set; }
+        #endregion
+        #region Route Info
+        // Old name "CampaignId"
         public long OfferId { get; set; }
+        // Old name "So"
+        public string Funnel { get; set; }
+        // Old name "sub"
+        public string AffCode { get; set; }
         #endregion
 
         #region Additional parameters
-        public string So { get; set; }
-        public string Sub { get; set; }
         public string Sub1 { get; set; }
         public string Sub2 { get; set; }
         public string Sub3 { get; set; }

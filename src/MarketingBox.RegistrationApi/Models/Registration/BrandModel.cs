@@ -1,6 +1,6 @@
 ﻿namespace MarketingBox.RegistrationApi.Models.Registration
 {
-    public class BrandInfo
+    public class BrandModel
     {
         public string CustomerId { get; set; }
 
@@ -8,6 +8,6 @@
 
         public string LoginUrl { get; set; }
 
-        public string Brand { get; set; }
+        //public string Brand { get; set; }
     }
 }

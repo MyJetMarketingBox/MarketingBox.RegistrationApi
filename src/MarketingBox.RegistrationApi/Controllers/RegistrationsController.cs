@@ -44,10 +44,8 @@ namespace MarketingBox.RegistrationApi.Controllers
         [ProducesResponseType(typeof(RegistrationCreateRespone), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<RegistrationCreateRespone>> CreateAsync(
-            [Required, FromHeader(Name = "affiliate-id")]
-            long affiliateId,
-            [Required, FromHeader(Name = "api-key")]
-            string apikey,
+            [Required, FromHeader(Name = "affiliate-id")] long affiliateId,
+            [Required, FromHeader(Name = "api-key")] string apikey,
             [FromBody] RegistrationCreateRequest request)
         {
             _logger.LogInformation("Creating new Lead {@context}", request);
@@ -58,19 +56,19 @@ namespace MarketingBox.RegistrationApi.Controllers
                 return BadRequest(results.GetErrors());
             }
 
-            var leadResponse = await _registrationService.CreateAsync(
+            var refistration = await _registrationService.CreateAsync(
                 MapToGrpc(request, affiliateId, apikey));
 
-            return MapToResponse(leadResponse);
+            return MapToResponse(refistration, request);
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(CustomerModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RegistrationsFullModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<CustomerModel>> SearchAsync(
+        public async Task<ActionResult<RegistrationsFullModel>> SearchAsync(
             [Required, FromHeader(Name = "affiliate-id")] long affiliateId,
             [Required, FromHeader(Name = "api-key")] string apikey,
-            [FromQuery] CustomerSearchRequest request)
+            [FromQuery] RegistrationSearchRequest request)
         {
             var serviceResponse = await _customerService.GetCustomers(new GetCustomersRequest()
             {
@@ -78,7 +76,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                 ApiKey = apikey,
                 From = request.FromDate,
                 To = request.ToDate,
-                Type = request.Type
+                Type = request.Type.MapEnum<CustomerType>()
             });
 
             if (serviceResponse.Error != null)
@@ -96,9 +94,9 @@ namespace MarketingBox.RegistrationApi.Controllers
         }
         
         [HttpGet("{uid}")]
-        [ProducesResponseType(typeof(CustomerModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RegistrationFullModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<CustomerModel>> SearchAsync(
+        public async Task<ActionResult<RegistrationFullModel>> SearchAsync(
             [Required, FromHeader(Name = "affiliate-id")] long affiliateId,
             [Required, FromHeader(Name = "api-key")] string apikey,
             [Required, FromRoute] string uid)
@@ -142,8 +140,8 @@ namespace MarketingBox.RegistrationApi.Controllers
                 },
                 AdditionalInfo = new ()
                 {
-                    So = request.So,
-                    Sub = request.Sub,
+                    So = request.Funnel,
+                    Sub = request.AffCode,
                     Sub1 = request.Sub1,
                     Sub2 = request.Sub2,
                     Sub3 = request.Sub3,
@@ -182,7 +180,10 @@ namespace MarketingBox.RegistrationApi.Controllers
             return affCreateRequest;
         }
 
-        private ActionResult <RegistrationCreateRespone> MapToResponse(Registration.Service.Grpc.Models.Registrations.Contracts.RegistrationCreateResponse response)
+        private ActionResult <RegistrationCreateRespone> MapToResponse(
+            Registration.Service.Grpc.Models.Registrations.Contracts.RegistrationCreateResponse response,
+            RegistrationCreateRequest originalRequest
+            )
         {
             if (response.Status == Registration.Service.Grpc.Models.Common.ResultCode.RequiredAuthentication)
             {
@@ -204,15 +205,28 @@ namespace MarketingBox.RegistrationApi.Controllers
             {
                 return Ok(new RegistrationCreateRespone
                 {
-                    OriginalData = new RegistrationGeneralInfo()
+                    Registration = new RegistrationModel()
                     {
-                        Email = response.OriginalData?.Email,
-                        FirstName = response.OriginalData?.FirstName,
-                        Ip = response.OriginalData?.Ip,
-                        LastName = response.OriginalData?.LastName,
-                        Password = response.OriginalData?.Password,
-                        Phone = response.OriginalData?.Phone,
-                        Country = response.OriginalData?.Country,
+                        //RegistrationUid = response.UniqueId,
+                        Email = originalRequest.Email,
+                        FirstName = originalRequest.FirstName,
+                        Ip = originalRequest.Ip,
+                        LastName = originalRequest.LastName,
+                        Phone = originalRequest.Phone,
+                        Country = originalRequest.Country,
+                        AffCode = originalRequest.AffCode,
+                        Funnel = originalRequest.Funnel,
+                        OfferId = originalRequest.OfferId,
+                        Sub1 = originalRequest.Sub1,    
+                        Sub2 = originalRequest.Sub2,
+                        Sub3 = originalRequest.Sub3,    
+                        Sub4 = originalRequest.Sub4,    
+                        Sub5 = originalRequest.Sub5,
+                        Sub6 = originalRequest.Sub6,    
+                        Sub7 = originalRequest.Sub7,
+                        Sub8 = originalRequest.Sub8,
+                        Sub9 = originalRequest.Sub9,
+                        Sub10 = originalRequest.Sub10
                     },
                     ResultCode = (int)response.Status,
                     Message = EnumExtensions.GetDescription((ResultCode)response.Status),
@@ -228,13 +242,35 @@ namespace MarketingBox.RegistrationApi.Controllers
             {
                 return Ok(new RegistrationCreateRespone
                 {
-                    RegistrationId = Convert.ToInt64(response.RegistrationId),
-                    BrandInfo = new BrandInfo()
+                    Brand = new BrandModel()
                     {
-                        Brand = response.BrandInfo.Brand,
+                        //Brand = response.BrandInfo.Brand,
                         CustomerId = response.BrandInfo.Data.CustomerId,
                         LoginUrl = response.BrandInfo.Data.LoginUrl,
                         Token = response.BrandInfo.Data.Token,
+                    },
+                    Registration = new RegistrationModel()
+                    {
+                        RegistrationUid = response.RegistrationUId,
+                        Email = originalRequest.Email,
+                        FirstName = originalRequest.FirstName,
+                        Ip = originalRequest.Ip,
+                        LastName = originalRequest.LastName,
+                        Phone = originalRequest.Phone,
+                        Country = originalRequest.Country,
+                        AffCode = originalRequest.AffCode,
+                        Funnel = originalRequest.Funnel,
+                        OfferId = originalRequest.OfferId,
+                        Sub1 = originalRequest.Sub1,
+                        Sub2 = originalRequest.Sub2,
+                        Sub3 = originalRequest.Sub3,
+                        Sub4 = originalRequest.Sub4,
+                        Sub5 = originalRequest.Sub5,
+                        Sub6 = originalRequest.Sub6,
+                        Sub7 = originalRequest.Sub7,
+                        Sub8 = originalRequest.Sub8,
+                        Sub9 = originalRequest.Sub9,
+                        Sub10 = originalRequest.Sub10
                     },
                     ResultCode = (int)response.Status,
                     Message = EnumExtensions.GetDescription((ResultCode)response.Status),
@@ -244,15 +280,28 @@ namespace MarketingBox.RegistrationApi.Controllers
 
             return NotFound(new RegistrationCreateRespone
             {
-                OriginalData = new RegistrationGeneralInfo()
+                Registration = new RegistrationModel()
                 {
-                    Email = response.OriginalData.Email,
-                    FirstName = response.OriginalData.FirstName,
-                    Ip = response.OriginalData.Ip,
-                    LastName = response.OriginalData.LastName,
-                    Password = response.OriginalData.Password,
-                    Phone = response.OriginalData.Phone,
-                    Country = response.OriginalData.Country
+                    //RegistrationUid = response.UniqueId,
+                    Email = originalRequest.Email,
+                    FirstName = originalRequest.FirstName,
+                    Ip = originalRequest.Ip,
+                    LastName = originalRequest.LastName,
+                    Phone = originalRequest.Phone,
+                    Country = originalRequest.Country,
+                    AffCode = originalRequest.AffCode,
+                    Funnel = originalRequest.Funnel,
+                    OfferId = originalRequest.OfferId,
+                    Sub1 = originalRequest.Sub1,
+                    Sub2 = originalRequest.Sub2,
+                    Sub3 = originalRequest.Sub3,
+                    Sub4 = originalRequest.Sub4,
+                    Sub5 = originalRequest.Sub5,
+                    Sub6 = originalRequest.Sub6,
+                    Sub7 = originalRequest.Sub7,
+                    Sub8 = originalRequest.Sub8,
+                    Sub9 = originalRequest.Sub9,
+                    Sub10 = originalRequest.Sub10
                 },
                 ResultCode = (int)ResultCode.Failed,
                 Message = EnumExtensions.GetDescription(ResultCode.Failed),
@@ -263,13 +312,67 @@ namespace MarketingBox.RegistrationApi.Controllers
                 }
             });
         }
-        private CustomerModel MapToModel(List<CustomerGrpc> customers)
+        private RegistrationsFullModel MapToModel(List<CustomerGrpc> registrationReports)
         {
-            return new() {Customers = customers};
+            var registrations = registrationReports.ConvertAll(x => new RegistrationFullModel()
+            {
+                Conversion = new ConversionModel
+                {
+                    CrmStatus = x.CrmStatus,
+                    Qftd = x.IsDeposit,
+                    QftdAt = x.DepositDate
+                },
+                Brand = new BrandModel()
+                {
+                    //TODO Add all filds
+                    //Token = x.Token
+                    //LoginUrl = x.LoginUrl
+                    //CustomerId = customer.CustomerId
+                },
+                Registration = new RegistrationModel()
+                {
+                    RegistrationUid = x.UId,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Country = x.Country,
+                    Email = x.Email,
+                    Ip = x.Ip,
+                    Phone = x.Phone,
+                    //TODO Add all filds
+                }
+            });
+
+            return new RegistrationsFullModel() { Registrations = registrations};
         }
-        private CustomerModel MapToModel(CustomerGrpc customer)
+        private RegistrationFullModel MapToModel(CustomerGrpc registrationReport)
         {
-            return new() {Customers = new List<CustomerGrpc>(){customer}};
+            return new RegistrationFullModel()
+            {
+                Conversion = new ConversionModel
+                {
+                    CrmStatus = registrationReport.CrmStatus,
+                    Qftd = registrationReport.IsDeposit,
+                    QftdAt = registrationReport.DepositDate
+                },
+                Brand = new BrandModel()
+                {
+                    //TODO Add all filds
+                    //Token = x.Token
+                    //LoginUrl = x.LoginUrl
+                    //CustomerId = customer.CustomerId
+                },
+                Registration = new RegistrationModel()
+                {
+                    RegistrationUid = registrationReport.UId,
+                    FirstName = registrationReport.FirstName,
+                    LastName = registrationReport.LastName,
+                    Country = registrationReport.Country,
+                    Email = registrationReport.Email,
+                    Ip = registrationReport.Ip,
+                    Phone = registrationReport.Phone,
+                    //TODO Add all filds
+                }
+            };
         }
     }
 }
