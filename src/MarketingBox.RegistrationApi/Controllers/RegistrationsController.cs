@@ -140,8 +140,8 @@ namespace MarketingBox.RegistrationApi.Controllers
                 },
                 AdditionalInfo = new ()
                 {
-                    So = request.Funnel,
-                    Sub = request.AffCode,
+                    Funnel = request.Funnel,
+                    AffCode = request.AffCode,
                     Sub1 = request.Sub1,
                     Sub2 = request.Sub2,
                     Sub3 = request.Sub3,
