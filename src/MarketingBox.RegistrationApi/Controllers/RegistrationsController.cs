@@ -6,17 +6,19 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketingBox.Registration.Service.Grpc;
-using MarketingBox.Registration.Service.Grpc.Models;
 using MarketingBox.Registration.Service.Grpc.Models.Affiliate;
 using MarketingBox.Registration.Service.Grpc.Models.Common;
 using MarketingBox.RegistrationApi.Domain.Extensions;
-using MarketingBox.RegistrationApi.Models;
 using MarketingBox.RegistrationApi.Models.Registration;
 using MarketingBox.RegistrationApi.Models.Registration.Contracts;
 using MarketingBox.RegistrationApi.Models.Validators;
 using Microsoft.Extensions.Logging;
 using Error = MarketingBox.RegistrationApi.Models.Registration.Contracts.Error;
 using ResultCode = MarketingBox.RegistrationApi.Models.Registration.Contracts.ResultCode;
+using MarketingBox.Registration.Service.Grpc.Models.Registrations.Contracts;
+using MarketingBox.Registration.Service.Grpc.Models.Registrations;
+using MarketingBox.Registration.Service.Domain.Crm;
+using RegistrationCreateRequest = MarketingBox.RegistrationApi.Models.Registration.Contracts.RegistrationCreateRequest;
 
 namespace MarketingBox.RegistrationApi.Controllers
 {
@@ -27,12 +29,12 @@ namespace MarketingBox.RegistrationApi.Controllers
         private readonly ILogger<RegistrationsController> _logger;
         private readonly IRegistrationService _registrationService;
         private readonly IAffiliateAuthService _affiliateService;
-        private readonly ICustomerService _customerService;
+        private readonly IRegistrationsByDateService _customerService;
 
         public RegistrationsController(IRegistrationService registrationService,
             ILogger<RegistrationsController> logger, 
-            IAffiliateAuthService affiliateService, 
-            ICustomerService customerService)
+            IAffiliateAuthService affiliateService,
+            IRegistrationsByDateService customerService)
         {
             _registrationService = registrationService;
             _logger = logger;
@@ -56,10 +58,10 @@ namespace MarketingBox.RegistrationApi.Controllers
                 return BadRequest(results.GetErrors());
             }
 
-            var refistration = await _registrationService.CreateAsync(
+            var registration = await _registrationService.CreateAsync(
                 MapToGrpc(request, affiliateId, apikey));
 
-            return MapToResponse(refistration, request);
+            return MapToResponse(registration, request);
         }
 
         [HttpGet]
@@ -70,14 +72,16 @@ namespace MarketingBox.RegistrationApi.Controllers
             [Required, FromHeader(Name = "api-key")] string apikey,
             [FromQuery] RegistrationSearchRequest request)
         {
-            var serviceResponse = await _customerService.GetCustomers(new GetCustomersRequest()
-            {
-                AffiliateId = affiliateId,
-                ApiKey = apikey,
-                From = request.FromDate,
-                To = request.ToDate,
-                Type = request.Type.MapEnum<CustomerType>()
-            });
+            var serviceResponse = await _customerService.GetRegistrationsAsync(
+                new RegistrationsGetByDateRequest()
+                {
+                    AffiliateId = affiliateId,
+                    ApiKey = apikey,
+                    From = request.FromDate,
+                    To = request.ToDate,
+                    Type = request.Type
+                        .MapEnum<Registration.Service.Grpc.Models.Registrations.Contracts.RegistrationType>()
+                });
 
             if (serviceResponse.Error != null)
             {
@@ -101,11 +105,11 @@ namespace MarketingBox.RegistrationApi.Controllers
             [Required, FromHeader(Name = "api-key")] string apikey,
             [Required, FromRoute] string uid)
         {
-            var serviceResponse = await _customerService.GetCustomer(new GetCustomerRequest()
+            var serviceResponse = await _customerService.GetRegistrationAsync(new RegistrationGetRequest()
             {
                 AffiliateId = affiliateId,
                 ApiKey = apikey,
-                UId = uid
+                RegistrationUId = uid,
             });
             
             if (serviceResponse.Error != null)
@@ -312,66 +316,89 @@ namespace MarketingBox.RegistrationApi.Controllers
                 }
             });
         }
-        private RegistrationsFullModel MapToModel(List<CustomerGrpc> registrationReports)
+        private RegistrationsFullModel MapToModel(List<RegistrationDetails> registrationReports)
         {
             var registrations = registrationReports.ConvertAll(x => new RegistrationFullModel()
             {
                 Conversion = new ConversionModel
                 {
-                    CrmStatus = x.CrmStatus,
-                    Qftd = x.IsDeposit,
-                    QftdAt = x.DepositDate
+                    CrmStatus = x.CrmStatus.ToCrmStatus(),
+                    Qftd = x.Status == RegistrationStatus.Approved,
+                    QftdAt = x.ConversionDate,
                 },
                 Brand = new BrandModel()
                 {
-                    //TODO Add all filds
-                    //Token = x.Token
-                    //LoginUrl = x.LoginUrl
-                    //CustomerId = customer.CustomerId
+                    Token = x.CustomerToken,
+                    LoginUrl = x.CustomerLoginUrl,
+                    CustomerId = x.CustomerId,
                 },
                 Registration = new RegistrationModel()
                 {
-                    RegistrationUid = x.UId,
+                    RegistrationUid = x.RegistrationUid,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
                     Country = x.Country,
                     Email = x.Email,
                     Ip = x.Ip,
                     Phone = x.Phone,
-                    //TODO Add all filds
-                }
+                    CreatedAt = x.CreatedAt,
+                    AffCode = x.AffCode,
+                    Funnel = x.Funnel,
+                    Sub1 = x.Sub1,
+                    Sub2 = x.Sub2,  
+                    Sub3 = x.Sub3,
+                    Sub4 = x.Sub4,
+                    Sub5 = x.Sub5,
+                    Sub6 = x.Sub6,
+                    Sub7 = x.Sub7,  
+                    Sub8 = x.Sub8,  
+                    Sub9 = x.Sub9,
+                    Sub10 = x.Sub10,
+                },
+
             });
 
             return new RegistrationsFullModel() { Registrations = registrations};
         }
-        private RegistrationFullModel MapToModel(CustomerGrpc registrationReport)
+        private RegistrationFullModel MapToModel(RegistrationDetails registration)
         {
             return new RegistrationFullModel()
             {
                 Conversion = new ConversionModel
                 {
-                    CrmStatus = registrationReport.CrmStatus,
-                    Qftd = registrationReport.IsDeposit,
-                    QftdAt = registrationReport.DepositDate
+                    CrmStatus = registration.CrmStatus.ToCrmStatus(),
+                    Qftd = registration.Status == RegistrationStatus.Approved,
+                    QftdAt = registration.ConversionDate,
                 },
                 Brand = new BrandModel()
                 {
-                    //TODO Add all filds
-                    //Token = x.Token
-                    //LoginUrl = x.LoginUrl
-                    //CustomerId = customer.CustomerId
+                    Token = registration.CustomerToken,
+                    LoginUrl = registration.CustomerLoginUrl,
+                    CustomerId = registration.CustomerId,
                 },
                 Registration = new RegistrationModel()
                 {
-                    RegistrationUid = registrationReport.UId,
-                    FirstName = registrationReport.FirstName,
-                    LastName = registrationReport.LastName,
-                    Country = registrationReport.Country,
-                    Email = registrationReport.Email,
-                    Ip = registrationReport.Ip,
-                    Phone = registrationReport.Phone,
-                    //TODO Add all filds
-                }
+                    RegistrationUid = registration.RegistrationUid,
+                    FirstName = registration.FirstName,
+                    LastName = registration.LastName,
+                    Country = registration.Country,
+                    Email = registration.Email,
+                    Ip = registration.Ip,
+                    Phone = registration.Phone,
+                    CreatedAt = registration.CreatedAt,
+                    AffCode = registration.AffCode,
+                    Funnel = registration.Funnel,
+                    Sub1 = registration.Sub1,
+                    Sub2 = registration.Sub2,
+                    Sub3 = registration.Sub3,
+                    Sub4 = registration.Sub4,
+                    Sub5 = registration.Sub5,
+                    Sub6 = registration.Sub6,
+                    Sub7 = registration.Sub7,
+                    Sub8 = registration.Sub8,
+                    Sub9 = registration.Sub9,
+                    Sub10 = registration.Sub10,
+                },
             };
         }
     }
