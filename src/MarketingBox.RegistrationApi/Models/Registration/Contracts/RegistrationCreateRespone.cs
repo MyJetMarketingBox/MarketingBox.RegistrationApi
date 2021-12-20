@@ -7,8 +7,7 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
     {
         public int ResultCode { get; set; }
         public string Message { get; set; }
-        [CanBeNull] public BrandModel Brand { get; set; }
-        [CanBeNull] public RegistrationModel Registration { get; set; }
+        [CanBeNull] public Registration Registration { get; set; }
         [CanBeNull] public Error Error { get; set; }
     }
 

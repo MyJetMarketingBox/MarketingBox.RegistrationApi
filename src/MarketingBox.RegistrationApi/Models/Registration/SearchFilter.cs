@@ -1,9 +1,12 @@
-﻿namespace MarketingBox.RegistrationApi.Models.Registration
+﻿using System.ComponentModel;
+
+namespace MarketingBox.RegistrationApi.Models.Registration
 {
     public enum SearchFilter
     {
         Registrations = 0,
-        Depositors = 1,
+        [Description("Depositors")]
+        QFTDepositors = 1,
         All = 2
     }
 }

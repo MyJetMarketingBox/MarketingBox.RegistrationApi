@@ -1,14 +1,15 @@
 ﻿using Destructurama.Attributed;
+using JetBrains.Annotations;
 using System;
 
 namespace MarketingBox.RegistrationApi.Models.Registration
 {
-    public class RegistrationModel
+    public class Registration
     {
         #region Personal Info
         public string RegistrationUid { get; set; }
         //public long? RegistrationId { get; set; }
-
+        [CanBeNull] public string CrmStatus { get; set; }
         public DateTime CreatedAt { get; set; }
 
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
@@ -51,6 +52,8 @@ namespace MarketingBox.RegistrationApi.Models.Registration
         public string Sub9 { get; set; }
         public string Sub10 { get; set; }
         #endregion
+        [CanBeNull] public Conversion Conversion { get; set; } = null;
+        [CanBeNull] public Brand Brand { get; set; } = null;
     }
 }
 

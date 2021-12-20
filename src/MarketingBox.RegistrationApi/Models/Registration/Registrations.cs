@@ -2,8 +2,8 @@
 
 namespace MarketingBox.RegistrationApi.Models.Registration
 {
-    public class RegistrationsFullModel
+    public class Registrations
     {
-        public List<RegistrationFullModel> Registrations { get; set; }
+        public List<Models.Registration.Registration> List { get; set; }
     }
 }

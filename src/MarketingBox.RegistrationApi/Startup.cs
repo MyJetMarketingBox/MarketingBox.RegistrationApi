@@ -94,7 +94,7 @@ namespace MarketingBox.RegistrationApi
         public ISet<int> ModelStateDictionaryResponseCodes { get; }
         protected virtual void ConfigureSwaggerGenOptions(SwaggerGenOptions options)
         {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "MarketingBox.RegistrationApi", Version = "v1" });
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "Traffme API", Version = "v1" });
             options.EnableXmsEnumExtension();
             options.MakeResponseValueTypesRequired();
 
