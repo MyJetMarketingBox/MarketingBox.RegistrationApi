@@ -1,10 +1,9 @@
 ﻿using System;
-using MarketingBox.Registration.Service.Grpc.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
 {
-    public class CustomerSearchRequest
+    public class RegistrationSearchRequest
     {
         [FromQuery(Name = "fromDate")]
         public DateTime FromDate { get; set; }
@@ -13,6 +12,6 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
         public DateTime ToDate { get; set; }
 
         [FromQuery(Name = "type")]
-        public CustomerType Type { get; set; }
+        public SearchFilter Type { get; set; }
     }
 }

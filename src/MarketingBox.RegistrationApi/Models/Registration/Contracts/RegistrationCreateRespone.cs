@@ -7,9 +7,7 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
     {
         public int ResultCode { get; set; }
         public string Message { get; set; }
-        public long? RegistrationId { get; set; }
-        [CanBeNull] public BrandInfo BrandInfo { get; set; }
-        [CanBeNull] public RegistrationGeneralInfo OriginalData { get; set; }
+        [CanBeNull] public Registration Registration { get; set; }
         [CanBeNull] public Error Error { get; set; }
     }
 
@@ -22,23 +20,7 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
         [Description("Operation needed authentication")]
         RequiredAuthentication = 2,
     }
-    //public enum ErrorType
-    //{
-    //    [Description("Unknown")]
-    //    Unknown = 0,
-    //    [Description("Invalid Parameter")]
-    //    InvalidParameter = 1,
-    //    [Description("Already Exist")]
-    //    AlreadyExist = 2,
-    //    [Description("Invalid Email")]
-    //    InvalidEmail = 3,
-    //    [Description("Invalid User Name Or Password")]
-    //    InvalidUserNameOrPassword = 4,
-    //    [Description("Invalid Country")]
-    //    InvalidCountry = 5,
-    //    [Description("Invalid Personal Data")]
-    //    InvalidPersonalData = 6
-    //}
+
     public class Error
     {
         public int ErrorCode { get; set; }

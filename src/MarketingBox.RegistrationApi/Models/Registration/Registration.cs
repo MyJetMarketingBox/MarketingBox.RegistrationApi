@@ -1,19 +1,26 @@
 ﻿using Destructurama.Attributed;
+using JetBrains.Annotations;
+using System;
 
-namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
+namespace MarketingBox.RegistrationApi.Models.Registration
 {
-    public class RegistrationCreateRequest
+    public class Registration
     {
         #region Personal Info
-        [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
-        public string FirstName { get; set; }
+        public string RegistrationUid { get; set; }
+        //public long? RegistrationId { get; set; }
+        [CanBeNull] public string CrmStatus { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
+        public string FirstName { get; set; }
+        
+        [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string LastName { get; set; }
-        
-        [LogMasked(PreserveLength = true)]
-        public string Password { get; set; }
-        
+
+        //[LogMasked(PreserveLength = true)]
+        //public string Password { get; set; }
+
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Email { get; set; }
         
@@ -33,7 +40,6 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
         // Old name "sub"
         public string AffCode { get; set; }
         #endregion
-
         #region Additional parameters
         public string Sub1 { get; set; }
         public string Sub2 { get; set; }
@@ -45,6 +51,10 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
         public string Sub8 { get; set; }
         public string Sub9 { get; set; }
         public string Sub10 { get; set; }
-        #endregion  
+        #endregion
+        [CanBeNull] public Conversion Conversion { get; set; } = null;
+        [CanBeNull] public Brand Brand { get; set; } = null;
     }
 }
+
+
