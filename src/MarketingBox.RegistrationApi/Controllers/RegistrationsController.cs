@@ -97,6 +97,7 @@ namespace MarketingBox.RegistrationApi.Controllers
         [HttpGet("{uid}")]
         [ProducesResponseType(typeof(Models.Registration.Registration), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Models.Registration.Registration>> SearchAsync(
             [Required, FromHeader(Name = "affiliate-id")] long affiliateId,
             [Required, FromHeader(Name = "api-key")] string apikey,
@@ -114,11 +115,11 @@ namespace MarketingBox.RegistrationApi.Controllers
                 if (serviceResponse.Error.Type == ErrorType.Unauthorized)
                     return Unauthorized();
 
-                return BadRequest();
+                return NotFound();
             }
 
             if (serviceResponse.Customer == null)
-                return NotFound();
+                return BadRequest();
 
             return Ok(MapToModel(serviceResponse.Customer));
         }
