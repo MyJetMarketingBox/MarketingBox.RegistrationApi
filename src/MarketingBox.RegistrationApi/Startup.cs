@@ -45,7 +45,7 @@ namespace MarketingBox.RegistrationApi
 
             app.UseRouting();
 
-            //app.UseCors();
+            app.UseCors();
 
             app.UseAuthorization();
 
