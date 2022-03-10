@@ -138,7 +138,8 @@ namespace MarketingBox.RegistrationApi.Controllers
                         Ip = request.Ip,
                         Password = request.Password,
                         Phone = request.Phone,
-                        Country = request.Country,
+                        CountryCode = request.CountryCode,
+                        CountryCodeType = request.CountryCodeType.Value,
                     },
                     AdditionalInfo = new()
                     {
@@ -184,7 +185,7 @@ namespace MarketingBox.RegistrationApi.Controllers
                 Ip = originalData.Ip,
                 LastName = originalData.LastName,
                 Phone = originalData.Phone,
-                Country = originalData.Country,
+                Country = originalData.CountryCode,
                 AffCode = originalData.AffCode,
                 Funnel = originalData.Funnel,
                 OfferId = originalData.OfferId,

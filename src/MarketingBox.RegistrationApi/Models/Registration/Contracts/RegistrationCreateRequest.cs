@@ -1,4 +1,5 @@
 ﻿using Destructurama.Attributed;
+using MarketingBox.Registration.Service.Domain.Models;
 
 namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
 {
@@ -23,7 +24,9 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Ip { get; set; }
         
-        public string Country { get; set; }
+        public string CountryCode { get; set; }
+        public CountryCodeType? CountryCodeType { get; set; }
+        
         #endregion
         #region Route Info
         // Old name "CampaignId"
@@ -45,6 +48,7 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
         public string Sub8 { get; set; }
         public string Sub9 { get; set; }
         public string Sub10 { get; set; }
+
         #endregion  
     }
 }
