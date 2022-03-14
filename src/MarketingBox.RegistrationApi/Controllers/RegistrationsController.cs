@@ -170,6 +170,10 @@ namespace MarketingBox.RegistrationApi.Controllers
             Response<GrpcRegistration> response,
             RegistrationCreateRequest originalData)
         {
+            if (response.Data==null)
+            {
+                return null;
+            }
             return new Models.Registration.Registration()
             {
                 Brand = new Brand()
@@ -244,6 +248,10 @@ namespace MarketingBox.RegistrationApi.Controllers
 
         private Models.Registration.Registration MapToModel(RegistrationDetails registration)
         {
+            if (registration is null)
+            {
+                return null;
+            }
             return new Models.Registration.Registration()
             {
                 Conversion = new Conversion
