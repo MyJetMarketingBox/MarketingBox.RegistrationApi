@@ -1,5 +1,5 @@
 ﻿using Destructurama.Attributed;
-using MarketingBox.Registration.Service.Domain.Models;
+using MarketingBox.Registration.Service.Domain.Models.Common;
 
 namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
 {

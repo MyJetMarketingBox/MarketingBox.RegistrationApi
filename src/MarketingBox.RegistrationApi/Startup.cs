@@ -16,7 +16,6 @@ using MyJetWallet.Sdk.Service;
 using Prometheus;
 using SimpleTrading.ServiceStatusReporterConnector;
 
-
 namespace MarketingBox.RegistrationApi
 {
     public class Startup
@@ -35,6 +34,7 @@ namespace MarketingBox.RegistrationApi
             services.AddControllers();
             services.SetupSwaggerDocumentation();
             services.AddHostedService<ApplicationLifetimeManager>();
+            services.AddAutoMapper(typeof(Startup));
             services.AddMyTelemetry("MB-", Program.Settings.JaegerUrl);
         }
 
@@ -95,7 +95,6 @@ namespace MarketingBox.RegistrationApi
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterModule<SettingsModule>();
-            builder.RegisterModule<ServiceModule>();
             builder.RegisterModule<ClientModule>();
         }
         public ISet<int> ModelStateDictionaryResponseCodes { get; }
