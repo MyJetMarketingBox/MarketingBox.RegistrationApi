@@ -21,7 +21,7 @@ namespace MarketingBox.RegistrationApi.Controllers
         private readonly ILogger<RegistrationsController> _logger;
         private readonly IRegistrationService _registrationService;
         private readonly IRegistrationsByDateService _customerService;
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public RegistrationsController(IRegistrationService registrationService,
             ILogger<RegistrationsController> logger,
@@ -30,7 +30,7 @@ namespace MarketingBox.RegistrationApi.Controllers
             _registrationService = registrationService;
             _logger = logger;
             _customerService = customerService;
-            this._mapper = mapper;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -48,7 +48,7 @@ namespace MarketingBox.RegistrationApi.Controllers
             
             var registration = await _registrationService.CreateAsync(grpcRequest);
 
-            return this.ProcessResult(registration, _mapper.Map<Models.Registration.Registration>(registration));
+            return this.ProcessResult(registration, _mapper.Map<Models.Registration.Registration>(registration.Data));
         }
 
         [HttpGet]

@@ -19,8 +19,7 @@ namespace MarketingBox.RegistrationApi.MapperProfiles
                 .ForMember(x => x.AuthInfo, x => x.MapFrom(z => z));
             CreateMap<RegistrationCreateRequest, RegistrationAdditionalInfo>();
             CreateMap<RegistrationCreateRequest, RegistrationGeneralInfo>();
-            CreateMap<RegistrationCreateRequest, AffiliateAuthInfo>()
-                .ForMember(x => x.CampaignId, x => x.MapFrom(z => z.OfferId));
+            CreateMap<RegistrationCreateRequest, AffiliateAuthInfo>();
 
             CreateMap<Registration.Service.Domain.Models.Registrations.Registration,
                     Models.Registration.Registration>()
