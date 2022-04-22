@@ -1,9 +1,9 @@
 using AutoMapper;
 using MarketingBox.Registration.Service.Domain.Models.Affiliate;
-using MarketingBox.Registration.Service.Domain.Models.Common;
 using MarketingBox.Registration.Service.Domain.Models.Registrations;
 using MarketingBox.RegistrationApi.Models.Registration;
 using MarketingBox.RegistrationApi.Models.Registration.Contracts;
+using MarketingBox.Sdk.Common.Enums;
 using GrpcRequests = MarketingBox.Registration.Service.Grpc.Requests;
 
 

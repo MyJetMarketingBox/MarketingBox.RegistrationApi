@@ -1,5 +1,5 @@
 ﻿using Destructurama.Attributed;
-using MarketingBox.Registration.Service.Domain.Models.Common;
+using MarketingBox.Sdk.Common.Enums;
 
 namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
 {
