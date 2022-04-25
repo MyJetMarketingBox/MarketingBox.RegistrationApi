@@ -20,21 +20,20 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
         public string LastName { get; set; }
 
         [Required]
-        [IsValidPassword]
         [StringLength(128, MinimumLength = 6)]
         [LogMasked(PreserveLength = true)]
         public string Password { get; set; }
 
-        [Required]
-        [IsValidEmail]
+        [Required, MinLength(7)]
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Email { get; set; }
 
-        [Required]
+        [Required, StringLength(20, MinimumLength = 7)]
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Phone { get; set; }
 
         [Required]
+        [StringLength(15, MinimumLength = 7)]
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Ip { get; set; }
 
