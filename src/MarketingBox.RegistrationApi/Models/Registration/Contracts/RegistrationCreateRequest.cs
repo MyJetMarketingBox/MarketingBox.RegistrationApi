@@ -23,8 +23,8 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
         [StringLength(128, MinimumLength = 6)]
         [LogMasked(PreserveLength = true)]
         public string Password { get; set; }
-
-        [Required, MinLength(7)]
+        
+        [Required, StringLength(320, MinimumLength = 6)]
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Email { get; set; }
 
