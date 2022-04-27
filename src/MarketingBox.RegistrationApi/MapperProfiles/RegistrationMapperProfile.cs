@@ -23,19 +23,19 @@ namespace MarketingBox.RegistrationApi.MapperProfiles
 
             CreateMap<Registration.Service.Domain.Models.Registrations.Registration,
                     Models.Registration.Registration>()
-                .ForMember(x => x.Brand, x => x.MapFrom(z => z.BrandInfo));
-            CreateMap<RegistrationBrandInfo, Brand>();
-            
-            CreateMap<RegistrationDetails, Models.Registration.Registration>()
+                .ForMember(x => x.RegistrationUid, x => x.MapFrom(z => z.UniqueId))
                 .ForMember(x => x.Brand, x => x.MapFrom(z => z))
                 .ForMember(x => x.Conversion, x => x.MapFrom(z => z))
-                .ForMember(x=>x.CrmStatus,x=>x.MapFrom(z=>z.CrmStatus.ToCrmStatus()));
-            CreateMap<RegistrationDetails, Conversion>()
+                .ForMember(x => x.CrmStatus, x => x.MapFrom(z => z.CrmStatus.ToCrmStatus()));
+            CreateMap<Registration.Service.Domain.Models.Registrations.Registration,
+                    Brand>()
+                .ForMember(x => x.Token, x => x.MapFrom(z => z.CustomerToken))
+                .ForMember(x => x.CustomerId, x => x.MapFrom(z => z.CustomerId))
+                .ForMember(x => x.LoginUrl, x => x.MapFrom(z => z.CustomerLoginUrl));
+
+            CreateMap<Registration.Service.Domain.Models.Registrations.Registration, Conversion>()
                 .ForMember(x => x.FirstDeposit, x => x.MapFrom(z => z.Status == RegistrationStatus.Approved))
                 .ForMember(x => x.FirstDepositDate, x => x.MapFrom(z => z.ConversionDate));
-            CreateMap<RegistrationDetails, Brand>()
-                .ForMember(x => x.LoginUrl,
-                    x => x.MapFrom(z => z.CustomerLoginUrl));
             CreateMap<RegistrationSearchRequest, GrpcRequests.Registration.RegistrationsGetByDateRequest>();
         }
     }
