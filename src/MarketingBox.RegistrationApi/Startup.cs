@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
+using AutoWrapper;
 using MarketingBox.RegistrationApi.Grpc;
 using MarketingBox.RegistrationApi.Modules;
 using MarketingBox.RegistrationApi.Services;
+using MarketingBox.Sdk.Common.Models.RestApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +15,6 @@ using MyJetWallet.Sdk.GrpcSchema;
 using MyJetWallet.Sdk.Service;
 using Prometheus;
 using SimpleTrading.ServiceStatusReporterConnector;
-
 
 namespace MarketingBox.RegistrationApi
 {
@@ -33,6 +34,7 @@ namespace MarketingBox.RegistrationApi
             services.AddControllers();
             services.SetupSwaggerDocumentation();
             services.AddHostedService<ApplicationLifetimeManager>();
+            services.AddAutoMapper(typeof(Startup));
             services.AddMyTelemetry("MB-", Program.Settings.JaegerUrl);
         }
 
@@ -48,7 +50,14 @@ namespace MarketingBox.RegistrationApi
             app.UseCors();
 
             app.UseAuthorization();
-
+            
+            app.UseApiResponseAndExceptionWrapper<ApiResponseMap>(
+                new AutoWrapperOptions
+                {
+                    UseCustomSchema = true,
+                    IgnoreWrapForOkRequests = true
+                });
+            
             app.UseMetricServer();
 
             app.BindServicesTree(Assembly.GetExecutingAssembly());
@@ -86,7 +95,6 @@ namespace MarketingBox.RegistrationApi
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterModule<SettingsModule>();
-            builder.RegisterModule<ServiceModule>();
             builder.RegisterModule<ClientModule>();
         }
         public ISet<int> ModelStateDictionaryResponseCodes { get; }

@@ -5,13 +5,10 @@ namespace MarketingBox.RegistrationApi.Models.Registration.Contracts
 {
     public class RegistrationSearchRequest
     {
-        [FromQuery(Name = "fromDate")]
-        public DateTime FromDate { get; set; }
+        public DateTime? From { get; set; }
 
-        [FromQuery(Name = "toDate")]
-        public DateTime ToDate { get; set; }
+        public DateTime? To { get; set; }
 
-        [FromQuery(Name = "type")]
-        public SearchFilter Type { get; set; }
+        public SearchFilter? Type { get; set; }
     }
 }

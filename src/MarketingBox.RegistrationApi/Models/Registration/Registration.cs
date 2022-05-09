@@ -34,7 +34,7 @@ namespace MarketingBox.RegistrationApi.Models.Registration
         #endregion
         #region Route Info
         // Old name "CampaignId"
-        public long OfferId { get; set; }
+        public long? CampaignId { get; set; }
         // Old name "So"
         public string Funnel { get; set; }
         // Old name "sub"
